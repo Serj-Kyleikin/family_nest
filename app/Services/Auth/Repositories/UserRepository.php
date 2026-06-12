@@ -45,7 +45,9 @@ class UserRepository extends AbstractRepository implements CreateContract, Updat
                 'password'  => Hash::make($userDTO->getPassword()),
             ]);
 
-            return  $this->createToken($user);
+            $user->assignRole('client');
+
+            return $this->createToken($user);
         });
     }
 

@@ -10,11 +10,17 @@ use App\Services\{
 };
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
+use Spatie\Permission\Models\Role;
 
 class AuthServiceTest extends TestCase
 {
-    public function testPositive(): void
+    public function testSignUpPositive(): void
     {
+        Role::create([
+            'name' => 'client',
+            'guard_name' => 'web',
+        ]);
+
         $name = 'John Doe';
         $email = 'john.doe@example.com';
         $password = 'password123';
@@ -24,6 +30,7 @@ class AuthServiceTest extends TestCase
         $dto->setName($name);
         $dto->setEmail($email);
         $dto->setPassword($password);
+        
 
         $result = $this->app->make(AuthService::class)->signUp($dto);
 
@@ -33,6 +40,7 @@ class AuthServiceTest extends TestCase
             'email' => $email,
         ]);
         $this->assertDatabaseCount('personal_access_tokens', 1);
+        $this->assertDatabaseCount('model_has_roles', 1);
     }
 
     public function testSignInPositive(): void
