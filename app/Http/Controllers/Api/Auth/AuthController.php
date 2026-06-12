@@ -13,6 +13,7 @@ use App\Services\Auth\{
 };
 use App\Exceptions\HandledException;
 use Illuminate\Http\JsonResponse;
+use OpenApi\Attributes as OA;
 
 class AuthController extends Controller
 {
@@ -20,59 +21,80 @@ class AuthController extends Controller
         private AuthService $authService,
     ) {}
 
-    /**
-     * @OA\Post(
-     *     path="/api/auth/signup",
-     *     summary="Register new user",
-     *     description="Creates a new user and returns API auth token.",
-     *     operationId="authSignUp",
-     *     tags={"Auth"},
-     *
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"name", "email", "password"},
-     *             @OA\Property(
-     *                 property="name",
-     *                 type="string",
-     *                 example="Ivan"
-     *             ),
-     *             @OA\Property(
-     *                 property="email",
-     *                 type="string",
-     *                 format="email",
-     *                 example="ivan@example.com"
-     *             ),
-     *             @OA\Property(
-     *                 property="password",
-     *                 type="string",
-     *                 format="password",
-     *                 example="password123"
-     *             )
-     *         )
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=201,
-     *         description="User registered successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="status", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="User registered successfully."),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     *                 @OA\Property(property="token", type="string", example="1|plainTextTokenExample"),
-     *                 @OA\Property(property="token_type", type="string", example="Bearer")
-     *             )
-     *         )
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation error"
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/api/auth/signup',
+        summary: 'Register new user',
+        description: 'Creates a new user and returns API auth token.',
+        operationId: 'authSignUp',
+        tags: ['Auth'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                type: 'object',
+                required: ['name', 'email', 'password'],
+                properties: [
+                    new OA\Property(
+                        property: 'name',
+                        type: 'string',
+                        example: 'Ivan'
+                    ),
+                    new OA\Property(
+                        property: 'email',
+                        type: 'string',
+                        format: 'email',
+                        example: 'ivan@example.com'
+                    ),
+                    new OA\Property(
+                        property: 'password',
+                        type: 'string',
+                        format: 'password',
+                        example: 'password123'
+                    ),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'User registered successfully',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(
+                            property: 'status',
+                            type: 'boolean',
+                            example: true
+                        ),
+                        new OA\Property(
+                            property: 'message',
+                            type: 'string',
+                            example: 'User registered successfully.'
+                        ),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'object',
+                            properties: [
+                                new OA\Property(
+                                    property: 'token',
+                                    type: 'string',
+                                    example: '1|plainTextTokenExample'
+                                ),
+                                new OA\Property(
+                                    property: 'token_type',
+                                    type: 'string',
+                                    example: 'Bearer'
+                                ),
+                            ]
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validation error'
+            ),
+        ]
+    )]
     public function signUp(SignUpRequest $request, SignUpDTOFactory $signUpDTOFactory): JsonResponse
     {
         try { 
@@ -93,87 +115,94 @@ class AuthController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/auth/signin",
-     *     summary="Authenticate user",
-     *     description="Authenticates user and returns API auth token.",
-     *     operationId="authSignIn",
-     *     tags={"Auth"},
-     *
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"email", "password"},
-     *             @OA\Property(
-     *                 property="email",
-     *                 type="string",
-     *                 format="email",
-     *                 example="ivan@example.com"
-     *             ),
-     *             @OA\Property(
-     *                 property="password",
-     *                 type="string",
-     *                 format="password",
-     *                 example="password123"
-     *             )
-     *         )
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="User authenticated successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="status",
-     *                 type="boolean",
-     *                 example=true
-     *             ),
-     *             @OA\Property(
-     *                 property="message",
-     *                 type="string",
-     *                 example="User authenticated successfully."
-     *             ),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     *                 @OA\Property(
-     *                     property="token",
-     *                     type="string",
-     *                     example="1|plainTextTokenExample"
-     *                 ),
-     *                 @OA\Property(
-     *                     property="token_type",
-     *                     type="string",
-     *                     example="Bearer"
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=401,
-     *         description="Invalid credentials",
-     *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="status",
-     *                 type="boolean",
-     *                 example=false
-     *             ),
-     *             @OA\Property(
-     *                 property="message",
-     *                 type="string",
-     *                 example="Invalid credentials."
-     *             )
-     *         )
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation error"
-     *     )
-     * )
-     */
+    #[OA\Post(
+        path: '/api/auth/signin',
+        summary: 'Authenticate user',
+        description: 'Authenticates user and returns API auth token.',
+        operationId: 'authSignIn',
+        tags: ['Auth'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                type: 'object',
+                required: ['email', 'password'],
+                properties: [
+                    new OA\Property(
+                        property: 'email',
+                        type: 'string',
+                        format: 'email',
+                        example: 'admin@mail.ru'
+                    ),
+                    new OA\Property(
+                        property: 'password',
+                        type: 'string',
+                        format: 'password',
+                        example: '12341234'
+                    ),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'User authenticated successfully',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(
+                            property: 'status',
+                            type: 'boolean',
+                            example: true
+                        ),
+                        new OA\Property(
+                            property: 'message',
+                            type: 'string',
+                            example: 'User authenticated successfully.'
+                        ),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'object',
+                            properties: [
+                                new OA\Property(
+                                    property: 'token',
+                                    type: 'string',
+                                    example: '1|plainTextTokenExample'
+                                ),
+                                new OA\Property(
+                                    property: 'token_type',
+                                    type: 'string',
+                                    example: 'Bearer'
+                                ),
+                            ]
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Invalid credentials',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(
+                            property: 'status',
+                            type: 'boolean',
+                            example: false
+                        ),
+                        new OA\Property(
+                            property: 'message',
+                            type: 'string',
+                            example: 'Invalid credentials.'
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validation error'
+            ),
+        ]
+    )]
     public function signIn(SignInRequest $request): JsonResponse
     {
         $email      = $request->string('email')->value();
