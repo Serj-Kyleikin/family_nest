@@ -37,7 +37,7 @@ class AuthServiceTest extends TestCase
 
     public function testSignInPositive(): void
     {
-        User::query()->create([
+        User::factory()->create([
             'name' => 'John Doe',
             'email' => 'john.doe@example.com',
             'password' => Hash::make('password123'),
@@ -59,7 +59,7 @@ class AuthServiceTest extends TestCase
 
     public function testSignInWrongPassword(): void
     {
-        User::query()->create([
+        User::factory()->create([
             'name'      => 'John Doe',
             'email'     => 'john.doe@example.com',
             'password'  => Hash::make('password123'),
