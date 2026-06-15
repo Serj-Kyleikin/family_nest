@@ -18,16 +18,40 @@ class SignUpRequest extends AuthRequest
                 'required',
                 'string',
                 'min:2',
-                'max:255',
+                'max:30',
             ],
             'email' => [
                 'required',
                 'string',
                 'email',
-                'max:255',
+                'max:20',
                 'unique:users,email',
             ],
             'password' => self::passwordRules(),
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name' => [
+                'required'  => 'The field is required',
+                'string'    => 'Invalid data type',
+                'min'       => 'The field min size is 2',
+                'max'       => 'The field max size is 30',
+            ],
+            'email' => [
+                'required'  => 'The field is required',
+                'string'    => 'Invalid data type',
+                'email'     => 'The field must be email format',
+                'max'       => 'The field max size is 30',
+                'unique'    => 'The field must be unique',
+            ],
+            'password' => [
+                'required'  => 'The field is required',
+                'string'    => 'Invalid data type',
+                'min'       => 'The field min size is 8',
+            ],
         ];
     }
 }

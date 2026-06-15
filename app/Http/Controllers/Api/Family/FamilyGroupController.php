@@ -30,7 +30,7 @@ class FamilyGroupController extends Controller
         security: [['bearerAuth' => []]],
         responses: [
             new OA\Response(
-                response: 200,
+                response: 201,
                 description: 'Group created successfully',
                 content: new OA\JsonContent(
                     type: 'object',
@@ -73,19 +73,17 @@ class FamilyGroupController extends Controller
     {
         try {
             DB::beginTransaction();
-
             $this->familyGroupService->create();
-
             DB::commit();
 
             return response()->json([
-                'status' => true,
-                'message' => 'Group created successfully.',
-            ], Response::HTTP_OK);
+                'status'    => true,
+                'message'   => 'Group created successfully.',
+            ], Response::HTTP_CREATED);
 
         } catch (HandledException $exception) {
-            DB::rollBack();
 
+            DB::rollBack();
             return $this->error($exception);
         }
     }
@@ -169,8 +167,8 @@ class FamilyGroupController extends Controller
             $members = $this->familyGroupService->getMembers();
 
             return response()->json([
-                'status' => true,
-                'data' => $members,
+                'status'    => true,
+                'data'      => $members,
             ], Response::HTTP_OK);
 
         } catch (HandledException $exception) {
@@ -253,8 +251,8 @@ class FamilyGroupController extends Controller
             $this->familyGroupService->addMember($userId);
 
             return response()->json([
-                'status' => true,
-                'message' => 'Member added successfully.',
+                'status'    => true,
+                'message'   => 'Member added successfully.',
             ], Response::HTTP_OK);
 
         } catch (HandledException $exception) {
