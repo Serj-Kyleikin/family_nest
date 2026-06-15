@@ -1,7 +1,10 @@
 <?php
 
-use App\Providers\Routes\Family\FamilyRoutesProvider;
-use App\Providers\Routes\Auth\AuthRoutesProvider;
+use App\Providers\Routes\{
+    Auth\AuthRoutesProvider,
+    Family\FamilyRoutesProvider,
+    Chat\ChatRoutesProvider,
+};
 use Illuminate\Support\Facades\Route;
 
 Route::group(['namespace' => 'App\Http\Controllers\Api'], function () {
@@ -11,5 +14,6 @@ Route::group(['namespace' => 'App\Http\Controllers\Api'], function () {
     Route::group(['middleware' => ['auth:sanctum']], function () {
 
         app(FamilyRoutesProvider::class)->register();
+        app(ChatRoutesProvider::class)->register();
     });
 });

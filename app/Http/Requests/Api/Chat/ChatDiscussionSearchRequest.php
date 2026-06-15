@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Api\Family\Group;
+namespace App\Http\Requests\Api\Chat;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AddMemberRequest extends FormRequest
+class ChatDiscussionSearchRequest extends FormRequest
 {
+    public string $text;
+
     public function authorize(): bool
     {
         return true;
@@ -14,19 +16,16 @@ class AddMemberRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => [
-                'required',
-                'integer'
-            ],
+            "text" => "required|string"
         ];
     }
 
     public function messages(): array
     {
         return [
-            'user_id' => [
+            'text' => [
                 'required'  => 'The field is required',
-                'integer'   => 'Invalid data type',
+                'string'    => 'Invalid data type'
             ]
         ];
     }
