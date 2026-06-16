@@ -2,12 +2,14 @@
 
 namespace App\Models\Chat;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\{
     Factories\HasFactory,
     SoftDeletes,
     Model,
     Relations\HasMany,
     Relations\HasOne,
+    Relations\BelongsToMany,
 };
 use OpenApi\Attributes as OA;
 
@@ -76,5 +78,10 @@ class Chat extends Model
     {
         return $this->hasOne(ChatDiscussion::class, 'chat_id', 'id')
             ->orderByDesc('id');
+    }
+
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'chats_members', 'chat_id', 'user_id');
     }
 }

@@ -17,9 +17,24 @@ abstract class AbstractRepository implements CreateContract, UpdateContract
         return $this->model->create($data);
     }
 
+    public function insert(array $data): void
+    {
+        $this->model->insert($data);
+    }
+
     public function update(array $filters, array $data): void
     {
         $this->model->where($filters)->update($data);
+    }
+
+    public function updateWhereIn(string $row, array $values, array $data): void
+    {
+        $this->model->whereIn($row, $values)->update($data);
+    }
+
+    public function delete(array $filters): void
+    {
+        $this->model->where($filters)->delete();
     }
 
     public function getWhere(array $filters, string|Expression|null|array $row = null): Collection

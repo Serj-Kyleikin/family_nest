@@ -7,4 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 interface CreateContract
 {
     public function create(array $data): Model;
+
+    public function insert(array $data): void;
 }

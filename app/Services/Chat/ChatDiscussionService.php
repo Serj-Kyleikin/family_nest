@@ -2,10 +2,8 @@
 
 namespace App\Services\Chat;
 
-use App\Models\{
-    Chat\ChatDiscussion,
-};
 use App\Services\{
+    Chat\Repositories\ChatDiscussionRepository,
     Chat\Util\ChatRulesUtil,
 };
 use Illuminate\{
@@ -15,12 +13,18 @@ use Illuminate\{
 
 class ChatDiscussionService
 {
+    public function __construct(
+        private readonly ChatDiscussionRepository $chatDiscussionRepository,
+    )
+    {
+    }
+
     public function create(int $chatId, string|null $text = null): void
     {
         $senderId = Auth::id();
         ChatRulesUtil::isUserMemberOfThisChat($chatId, $senderId);
 
-        ChatDiscussion::create([
+        $this->chatDiscussionRepository->create([
             'chat_id'   => $chatId,
             'user_id'   => $senderId,
             'text'      => $text
@@ -33,10 +37,10 @@ class ChatDiscussionService
         ChatRulesUtil::isUserMemberOfThisChat($chatId, $senderId);
         ChatRulesUtil::isDiscussionBelongsToChatAndUser($chatId, $discussionId, $senderId);
 
-        ChatDiscussion::where(['id' => $discussionId])
-            ->update([
-                'text' => $text
-            ]);
+        $this->chatDiscussionRepository->update(
+            ['id' => $discussionId],
+            ['text' => $text]
+        );
     }
 
     public function delete(int $chatId, int $discussionId): void
@@ -45,7 +49,7 @@ class ChatDiscussionService
         ChatRulesUtil::isUserMemberOfThisChat($chatId, $senderId);
         ChatRulesUtil::isDiscussionBelongsToChatAndUser($chatId, $discussionId, $senderId);
 
-        ChatDiscussion::where(['id' => $discussionId])->delete();
+        $this->chatDiscussionRepository->delete(['id' => $discussionId]);
     }
 
     public function searchByText(int $chatId, string $text): Collection
@@ -53,13 +57,7 @@ class ChatDiscussionService
         $senderId = Auth::id();
         ChatRulesUtil::isUserMemberOfThisChat($chatId, $senderId);
 
-        return ChatDiscussion::query()
-            ->whereHas('chat', function($query) use ($chatId) {
-                $query->where(['id' => $chatId]);
-            })
-            ->where('text', 'LIKE', '%' . $text . '%')
-            ->with(['user:id,name'])
-            ->get();
+        return $this->chatDiscussionRepository->searchByText($chatId, $text);
     }
 
     public function setIsRead(int $chatId, array $lookedDiscussionsIds): void
@@ -68,6 +66,6 @@ class ChatDiscussionService
         ChatRulesUtil::isUserMemberOfThisChat($chatId, $senderId);
         ChatRulesUtil::areDiscussionsBelongsToChat($chatId, $senderId, $lookedDiscussionsIds);
 
-        ChatDiscussion::whereIn('id', $lookedDiscussionsIds)->update(['is_read' => 1]);
+        $this->chatDiscussionRepository->updateWhereIn('id', $lookedDiscussionsIds, ['is_read' => 1]);
     }
 }
