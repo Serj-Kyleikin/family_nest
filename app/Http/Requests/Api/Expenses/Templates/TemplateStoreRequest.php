@@ -14,8 +14,8 @@ class TemplateStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'group_id' => 'required|integer',
-            'name' => 'required|string|max:255',
+            'group_id'  => 'required|integer',
+            'name'      => 'required|string|max:255',
             'is_active' => 'nullable|boolean',
         ];
     }
