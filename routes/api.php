@@ -4,6 +4,7 @@ use App\Providers\Routes\{
     Auth\AuthRoutesProvider,
     Family\FamilyRoutesProvider,
     Chat\ChatRoutesProvider,
+    Expense\ExpenseRoutesProvider,
 };
 use Illuminate\Support\Facades\Route;
 
@@ -15,5 +16,6 @@ Route::group(['namespace' => 'App\Http\Controllers\Api'], function () {
 
         app(FamilyRoutesProvider::class)->register();
         app(ChatRoutesProvider::class)->register();
+        app(ExpenseRoutesProvider::class)->register();
     });
 });
