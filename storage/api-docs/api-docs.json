@@ -2227,6 +2227,11 @@
                         "items": {
                             "$ref": "#/components/schemas/ChatDiscussion"
                         }
+                    },
+                    "unread_count": {
+                        "description": "Количество непрочитанных сообщений собеседника в чате",
+                        "type": "integer",
+                        "example": 3
                     }
                 },
                 "type": "object"

@@ -70,6 +70,54 @@ class ChatServiceTest extends TestCase
         $this->assertCount(0, $chats);
     }
 
+    public function test_positive_index_counts_only_unread_messages_of_other_user(): void
+    {
+        $group      = FamilyGroup::factory()->create();
+        $user       = User::factory()->create(['group_id' => $group->id]);
+        $otherUser  = User::factory()->create(['group_id' => $group->id]);
+        $someUser   = User::factory()->create(['group_id' => $group->id]);
+
+        $chat       = Chat::factory()
+            ->withMembers($user, $otherUser)
+            ->create();
+        $ownChat    = Chat::factory()
+            ->withMembers($user, $someUser)
+            ->create();
+
+        ChatDiscussion::factory()->create([
+            'chat_id' => $chat->id,
+            'user_id' => $otherUser->id,
+            'is_read' => 0,
+        ]);
+        ChatDiscussion::factory()->create([
+            'chat_id' => $chat->id,
+            'user_id' => $otherUser->id,
+            'is_read' => null,
+        ]);
+        ChatDiscussion::factory()->create([
+            'chat_id' => $chat->id,
+            'user_id' => $otherUser->id,
+            'is_read' => 1,
+        ]);
+        ChatDiscussion::factory()->create([
+            'chat_id' => $chat->id,
+            'user_id' => $user->id,
+            'is_read' => 0,
+        ]);
+        ChatDiscussion::factory()->create([
+            'chat_id' => $ownChat->id,
+            'user_id' => $user->id,
+            'is_read' => 0,
+        ]);
+
+        Auth::login($user);
+        $chats = $this->app->make(ChatService::class)->index();
+
+        $this->assertCount(2, $chats);
+        $this->assertEquals(2, $chats->firstWhere('id', $chat->id)->unread_count);
+        $this->assertEquals(0, $chats->firstWhere('id', $ownChat->id)->unread_count);
+    }
+
     public function testPositiveCreate(): void
     {
         $group      = FamilyGroup::factory()->create();

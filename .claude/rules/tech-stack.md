@@ -5,7 +5,7 @@
 
 ## Границы стека
 
-- PHP `^8.3`, Laravel 13. Не используй синтаксис новее PHP 8.3, пока я не поднял требование в `composer.json`.
+- PHP `^8.5`, Laravel 13. --
 - Не меняй версии в `composer.json` без прямой просьбы.
 - `minimum-stability: stable` — как в `composer.json`, не меняй.
 - `composer.lock` лежит в репозитории и версионируется. Сам его не правь и не коммить без просьбы.
@@ -35,7 +35,3 @@ Dev-зависимости: `phpunit/phpunit`, `mockery/mockery`, `fakerphp/fake
   (`HasApiTokens` на `User`). Не вводи другой guard.
 - Роли — spatie (`HasRoles` на `User`). Сейчас используются роли `client` (выдаётся при регистрации)
   и `admin`; роли засеваются в `RoleTableSeeder`.
-
-## Фронтенд
-
-- Своего фронтенда у проекта нет.

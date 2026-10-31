@@ -51,6 +51,12 @@ use OpenApi\Attributes as OA;
             type: 'array',
             items: new OA\Items(ref: '#/components/schemas/ChatDiscussion')
         ),
+        new OA\Property(
+            property: 'unread_count',
+            type: 'integer',
+            example: 3,
+            description: 'Количество непрочитанных сообщений собеседника в чате'
+        ),
     ]
 )]
 class Chat extends Model

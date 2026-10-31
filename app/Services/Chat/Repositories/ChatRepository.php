@@ -30,6 +30,17 @@ class ChatRepository extends AbstractRepository implements CreateContract, Updat
                     $query->where('text', 'LIKE', '%' . $text . '%');
                 });
             })
+            ->withCount([
+                'discussions as unread_count' => function ($query) use ($userId) {
+                    $query
+                        ->where('user_id', '!=', $userId)
+                        ->where(function ($query) {
+                            $query
+                                ->whereNull('is_read')
+                                ->orWhere('is_read', 0);
+                        });
+                },
+            ])
             ->with([
                 'lastDiscussion:id,chat_id,user_id,text,is_read,updated_at',
                 'members' => function ($query) use ($userId) {
