@@ -27,11 +27,15 @@ abstract class Controller
 {
     protected function error(Exception $exception): JsonResponse
     {
-        $code = strlen($exception->getCode()) === 3 ? $exception->getCode() : HTTPResponse::HTTP_BAD_REQUEST;
+        $code           = $exception->getCode();
+        $isHttpStatus   = is_int($code)
+            && $code >= HTTPResponse::HTTP_CONTINUE
+            && $code <= HTTPResponse::HTTP_NETWORK_AUTHENTICATION_REQUIRED;
+        $status         = $isHttpStatus ? $code : HTTPResponse::HTTP_BAD_REQUEST;
 
         return response()->json([
             'status'  => false, 
             'message' => $exception->getMessage()
-        ], $code);
+        ], $status);
     }
 }

@@ -4,13 +4,14 @@ namespace App\SharedKernel\Repository;
 
 use App\SharedKernel\Repository\Contracts\{
     CreateContract, 
+    DeleteContract,
     UpdateContract,
 };
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Collection;
 
-abstract class AbstractRepository implements CreateContract, UpdateContract
+abstract class AbstractRepository implements CreateContract, DeleteContract, UpdateContract
 {
     public function create(array $data): Model
     {

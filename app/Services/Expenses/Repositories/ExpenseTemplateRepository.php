@@ -13,5 +13,14 @@ class ExpenseTemplateRepository extends AbstractRepository implements CreateCont
         protected ExpenseTemplate $model
     ) {
     }
+
+    public function firstForUser(int $id, int $userId, bool $onlyActive = false, array $columns = ['*']): ExpenseTemplate|null
+    {
+        return $this->model->query()
+            ->where('id', $id)
+            ->when($onlyActive, fn ($query) => $query->where('is_active', true))
+            ->whereHas('templateGroup', fn ($query) => $query->where('user_id', $userId))
+            ->first($columns);
+    }
 }
 

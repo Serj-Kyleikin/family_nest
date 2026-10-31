@@ -42,7 +42,9 @@ class ExpenseTemplateGroupService
 
     public function get(int $id): ExpenseTemplateGroup
     {
-        $group = $this->expenseTemplateGroupRepository->firstWhere(['id' => $id]);
+        $userId = Auth::id();
+
+        $group = $this->expenseTemplateGroupRepository->firstWhere(['id' => $id, 'user_id' => $userId]);
 
         throw_unless(
             $group, 
@@ -56,13 +58,17 @@ class ExpenseTemplateGroupService
 
     public function update(int $id, string $name): void
     {
-        ExpenseTemplateGroupRulesUtil::isExists($id);
-        $this->expenseTemplateGroupRepository->update(['id' => $id], ['name' => $name]);
+        $userId = Auth::id();
+
+        ExpenseTemplateGroupRulesUtil::isExists($id, $userId);
+        $this->expenseTemplateGroupRepository->update(['id' => $id, 'user_id' => $userId], ['name' => $name]);
     }
 
     public function delete(int $id): void
     {
-        ExpenseTemplateGroupRulesUtil::isExists($id);
-        $this->expenseTemplateGroupRepository->delete(['id' => $id]);
+        $userId = Auth::id();
+
+        ExpenseTemplateGroupRulesUtil::isExists($id, $userId);
+        $this->expenseTemplateGroupRepository->delete(['id' => $id, 'user_id' => $userId]);
     }
 }

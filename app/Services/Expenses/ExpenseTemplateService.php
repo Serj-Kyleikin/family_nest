@@ -11,6 +11,7 @@ use App\Services\{
     Expenses\Util\ExpenseTemplateRulesUtil,
 };
 use App\Exceptions\HandledException;
+use Illuminate\Support\Facades\Auth;
 
 class ExpenseTemplateService
 {
@@ -21,7 +22,9 @@ class ExpenseTemplateService
 
     public function create(int $groupId, string $name, bool $isActive = true): void
     {
-        ExpenseTemplateGroupRulesUtil::isExists($groupId);
+        $userId = Auth::id();
+
+        ExpenseTemplateGroupRulesUtil::isExists($groupId, $userId);
 
         $this->expenseTemplateRepository->create([
             'group_id'  => $groupId,
@@ -32,7 +35,9 @@ class ExpenseTemplateService
 
     public function get(int $id): ExpenseTemplate
     {
-        $template = $this->expenseTemplateRepository->firstWhere(['id' => $id], ['id', 'name']);
+        $userId = Auth::id();
+
+        $template = $this->expenseTemplateRepository->firstForUser($id, $userId, false, ['id', 'name']);
         throw_unless(
             $template, 
             HandledException::class, 
@@ -45,8 +50,10 @@ class ExpenseTemplateService
 
     public function update(int $id, int $groupId, string $name, bool $isActive): void
     {
-        ExpenseTemplateGroupRulesUtil::isExists($groupId);
-        ExpenseTemplateRulesUtil::isExists($id);
+        $userId = Auth::id();
+
+        ExpenseTemplateGroupRulesUtil::isExists($groupId, $userId);
+        ExpenseTemplateRulesUtil::isExists($id, $userId);
 
         $this->expenseTemplateRepository->update(['id' => $id], [
             'group_id'  => $groupId,
@@ -57,7 +64,9 @@ class ExpenseTemplateService
 
     public function delete(int $id): void
     {
-        ExpenseTemplateRulesUtil::isExists($id);
+        $userId = Auth::id();
+
+        ExpenseTemplateRulesUtil::isExists($id, $userId);
         $this->expenseTemplateRepository->delete(['id' => $id]);
     }
 }

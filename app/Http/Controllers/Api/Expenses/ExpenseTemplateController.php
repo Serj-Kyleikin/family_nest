@@ -90,20 +90,20 @@ class ExpenseTemplateController extends Controller
             ),
         ],
         responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Group show',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'status', type: 'boolean', example: true),
-                        new OA\Property(
-                            property: 'data',
-                            type: 'object',
-                            ref: '#/components/schemas/ExpenseTemplate'
-                        ),
-                    ]
-                )
-            ),
+            // new OA\Response(
+            //     response: 200,
+            //     description: 'Group show',
+            //     content: new OA\JsonContent(
+            //         properties: [
+            //             new OA\Property(property: 'status', type: 'boolean', example: true),
+            //             new OA\Property(
+            //                 property: 'data',
+            //                 type: 'object',
+            //                 ref: '#/components/schemas/ExpenseTemplate'
+            //             ),
+            //         ]
+            //     )
+            // ),
             new OA\Response(response: 401, description: 'Unauthorized'),
             new OA\Response(response: 404, description: 'Not found'),
         ]

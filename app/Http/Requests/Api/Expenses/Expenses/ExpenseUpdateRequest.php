@@ -18,7 +18,7 @@ class ExpenseUpdateRequest extends FormRequest
             'template_id'   => 'nullable|integer',
             'group_id'      => 'nullable|integer',
             'name'          => 'nullable|string|min:2|max:20',
-            'amount'        => 'required|integer',
+            'amount'        => 'required|numeric|decimal:0,2',
         ];
     }
 

@@ -10,9 +10,13 @@ class ExpenseRulesUtil
     /**
      * @throws \Throwable
      */
-    public static function isExists(int $id): void
+    public static function isExists(int $id, int $userId): void
     {
-        $expense = Expense::where('id', $id)->first();
+        $expense = Expense::query()
+            ->where('id', $id)
+            ->where('user_id', $userId)
+            ->first();
+
         throw_unless(
             $expense, 
             HandledException::class, 

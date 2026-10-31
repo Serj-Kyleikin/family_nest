@@ -10,9 +10,12 @@ class ExpenseTemplateGroupRulesUtil
     /**
      * @throws \Throwable
      */
-    public static function isExists(int $id): void
+    public static function isExists(int $id, int $userId): void
     {
-        $group = ExpenseTemplateGroup::where('id', $id)->first();
+        $group = ExpenseTemplateGroup::query()
+            ->where('id', $id)
+            ->where('user_id', $userId)
+            ->first();
 
         throw_unless(
             $group, 
