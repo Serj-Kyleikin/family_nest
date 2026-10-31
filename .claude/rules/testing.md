@@ -1,7 +1,7 @@
 # Тесты
 
-- В `phpunit.xml` две сюиты: `Unit` → `tests/Unit` и `Feature` → `tests/Feature`. В `tests/Feature` сейчас
-  только `ExampleTest`. Тесты сервисов пишутся в `tests/Unit/Services/<Домен>/`.
+- В `phpunit.xml` одна сюита: `Unit` → `tests/Unit`. Каталога `tests/Feature` нет, сюиты `Feature` в конфиге тоже
+  (PHPUnit падает, если каталог сюиты из конфига отсутствует). Тесты сервисов пишутся в `tests/Unit/Services/<Домен>/`.
 - Не запускай у себя тесты.
 - Не создавай тесты для jobs, middleware, SharedKernel.
 - Окружение тестов — SQLite in-memory (`phpunit.xml`), `Tests\TestCase` подключает `RefreshDatabase`.

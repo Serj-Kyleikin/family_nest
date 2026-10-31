@@ -18,13 +18,18 @@ class ChatRepository extends AbstractRepository implements CreateContract, Updat
     {
     }
 
-    public function getUserChats(int $userId): Collection
+    public function getUserChats(int $userId, string|null $text = null): Collection
     {
         $chats = $this->model->query()
             ->whereHas('members', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })
             ->has('discussions')
+            ->when(filled($text), function ($query) use ($text) {
+                $query->whereHas('discussions', function ($query) use ($text) {
+                    $query->where('text', 'LIKE', '%' . $text . '%');
+                });
+            })
             ->with([
                 'lastDiscussion:id,chat_id,user_id,text,is_read,updated_at',
                 'members' => function ($query) use ($userId) {
@@ -86,8 +91,26 @@ class ChatRepository extends AbstractRepository implements CreateContract, Updat
             ])
             ->first();
 
-        $chat->users->makeHidden('pivot');
+        if($chat instanceof Chat) {
+            $chat->users->makeHidden('pivot');
+        }
 
         return $chat;
+    }
+
+    public function getIdsWhereAllMembersIn(array $userIds): array
+    {
+        return $this->model->query()
+            ->whereHas('members', fn ($query) => $query->whereIn('user_id', $userIds))
+            ->whereDoesntHave('members', fn ($query) => $query->whereNotIn('user_id', $userIds))
+            ->pluck('id')
+            ->all();
+    }
+
+    public function deleteByIds(array $chatIds): void
+    {
+        $this->model->query()
+            ->whereIn('id', $chatIds)
+            ->delete();
     }
 }

@@ -14,4 +14,11 @@ class ChatMemberRepository extends AbstractRepository implements CreateContract,
     )
     {
     }
+
+    public function deleteByChatIds(array $chatIds): void
+    {
+        $this->model->query()
+            ->whereIn('chat_id', $chatIds)
+            ->delete();
+    }
 }

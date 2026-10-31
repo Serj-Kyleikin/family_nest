@@ -11,11 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('expenses', function (Blueprint $table) {
+        Schema::create('family_group_links', function (Blueprint $table) {
 
-            $table->unsignedBigInteger('template_id')
-                ->nullable()
-                ->after('group_id');
+            $table->id();
+            $table->boolean('is_active')
+                ->default(true);
+
+            $table->unsignedBigInteger('group_id');
+            $table->string('token', 64)
+                ->unique();
         });
     }
 
@@ -24,9 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('expenses', function (Blueprint $table) {
-
-            $table->dropColumn('template_id');
-        });
+        Schema::dropIfExists('family_group_links');
     }
 };

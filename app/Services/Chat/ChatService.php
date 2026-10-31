@@ -18,8 +18,8 @@ use Illuminate\{
 class ChatService
 {
     public function __construct(
-        private readonly CreateChatHandler $createChatHandler,
-        private readonly ChatRepository $chatRepository,
+        private readonly CreateChatHandler  $createChatHandler,
+        private readonly ChatRepository     $chatRepository,
     )
     {
     }
@@ -29,6 +29,13 @@ class ChatService
         $userId = Auth::id();
 
         return $this->chatRepository->getUserChats($userId);
+    }
+
+    public function search(string $text): Collection
+    {
+        $userId = Auth::id();
+
+        return $this->chatRepository->getUserChats($userId, $text);
     }
 
     public function create(int $userToId): Chat
