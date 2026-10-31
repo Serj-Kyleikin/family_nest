@@ -170,4 +170,85 @@ class ChatServiceTest extends TestCase
             ->make(ChatService::class)
             ->getChatWithDiscussionsAndMembers($chat->id);
     }
+
+    public function test_positive_search_chats_by_discussion_text(): void
+    {
+        $searchText         = 'milk';
+
+        $service            = $this->app->make(ChatService::class);
+
+        $user               = User::factory()->create();
+        $matchedUser        = User::factory()->create();
+        $unmatchedUser      = User::factory()->create();
+
+        $matchedChat        = Chat::factory()
+            ->withMembers($user, $matchedUser)
+            ->create();
+        $unmatchedChat      = Chat::factory()
+            ->withMembers($user, $unmatchedUser)
+            ->create();
+        $foreignChat        = Chat::factory()
+            ->withMembers($matchedUser, $unmatchedUser)
+            ->create();
+
+        ChatDiscussion::factory()->create(['chat_id' => $matchedChat->id, 'user_id' => $user->id, 'text' => 'Buy milk tomorrow']);
+        ChatDiscussion::factory()->create(['chat_id' => $unmatchedChat->id, 'user_id' => $user->id, 'text' => 'Weather is nice']);
+        ChatDiscussion::factory()->create(['chat_id' => $foreignChat->id, 'user_id' => $matchedUser->id, 'text' => 'Milk is over']);
+
+        Auth::login($user);
+
+        $chats = $service->search($searchText);
+
+        $this->assertCount(1, $chats);
+        $this->assertEquals($matchedChat->id, $chats->first()->id);
+        $this->assertEquals($matchedUser->id, $chats->first()->member->id);
+        $this->assertNotNull($chats->first()->lastDiscussion);
+    }
+
+    public function test_positive_search_chats_nothing_found(): void
+    {
+        $searchText     = 'absent';
+
+        $service        = $this->app->make(ChatService::class);
+
+        $user           = User::factory()->create();
+        $otherUser      = User::factory()->create();
+
+        $chat           = Chat::factory()
+            ->withMembers($user, $otherUser)
+            ->create();
+
+        ChatDiscussion::factory()->create(['chat_id' => $chat->id, 'user_id' => $user->id, 'text' => 'Hello']);
+
+        Auth::login($user);
+
+        $chats = $service->search($searchText);
+
+        $this->assertCount(0, $chats);
+    }
+
+    public function test_positive_search_chats_ignores_deleted_discussions(): void
+    {
+        $searchText     = 'secret';
+
+        $service        = $this->app->make(ChatService::class);
+
+        $user           = User::factory()->create();
+        $otherUser      = User::factory()->create();
+
+        $chat           = Chat::factory()
+            ->withMembers($user, $otherUser)
+            ->create();
+
+        $deletedDiscussion  = ChatDiscussion::factory()->create(['chat_id' => $chat->id, 'user_id' => $user->id, 'text' => 'Top secret']);
+        ChatDiscussion::factory()->create(['chat_id' => $chat->id, 'user_id' => $user->id, 'text' => 'Hello']);
+
+        $deletedDiscussion->delete();
+
+        Auth::login($user);
+
+        $chats = $service->search($searchText);
+
+        $this->assertCount(0, $chats);
+    }
 }
