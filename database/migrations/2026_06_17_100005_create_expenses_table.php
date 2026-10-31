@@ -18,6 +18,8 @@ return new class extends Migration
 
             $table->integer('group_id')
                 ->nullable();
+            $table->unsignedBigInteger('template_id')
+                ->nullable();
             $table->string('name')
                 ->nullable();
 

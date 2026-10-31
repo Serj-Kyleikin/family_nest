@@ -81,3 +81,7 @@ if ($isRefundAcquired) {
 ## Cache
 
 - Скоро появится, пока что не используем.
+
+## Response
+
+- message для create,update,delete всегда обязателен в response

@@ -2,82 +2,75 @@
 
 namespace App\Services\Family;
 
+use App\Models\Family\FamilyGroup;
 use App\Services\{
     Auth\Repositories\UserRepository,
+    Chat\Handler\DeleteUsersChatsHandler,
+    Family\Repositories\FamilyGroupLinkRepository,
+    Family\Repositories\FamilyGroupLinkRequestRepository,
     Family\Repositories\FamilyGroupRepository,
+    Family\Util\GroupRulesUtil,
 };
-use App\Exceptions\HandledException;
-use Illuminate\{
-    Support\Collection,
-    Support\Facades\Auth,
-};
+use Illuminate\Support\Facades\Auth;
 
 class FamilyGroupService
 {
     public function __construct(
-        private FamilyGroupRepository   $familyGroupRepository,
-        private UserRepository          $userRepository,
+        private FamilyGroupRepository               $familyGroupRepository,
+        private UserRepository                      $userRepository,
+        private DeleteUsersChatsHandler             $deleteUsersChatsHandler,
+        private FamilyGroupLinkRepository           $familyGroupLinkRepository,
+        private FamilyGroupLinkRequestRepository    $familyGroupLinkRequestRepository,
     ) {}
 
-    public function create(): void
+    public function create(): FamilyGroup
     {
         $user       = Auth::user();
-
-        throw_unless(
-            $user->group_id === null, 
-            HandledException::class,
-            'Group is already created',
-            403
-        );
-
-        $group      = $this->familyGroupRepository->create(['name' => null]);
+                    GroupRulesUtil::isGroupCreated($user->group_id);
+        
+        $group      = $this->familyGroupRepository->create(['name' => 'Семья']);
         $groupId    = $group->id;
 
-        $this->userRepository->update(['id' => $user->id], ['group_id' => $groupId]);
+                    $this->userRepository->update(
+                        ['id' => $user->id], 
+                        ['group_id' => $groupId]
+                    );
+
+        return $group;
     }
 
-    public function getMembers(): Collection
+    public function get(): FamilyGroup
     {
-        $groupId = Auth::user()->group_id;
-
-        throw_unless(
-            $groupId, 
-            HandledException::class,
-            'Group not found',
-            404
-        );
-
-        return $this->userRepository->getWhere([
-            'group_id' => $groupId,
-        ], ['id', 'name', 'group_id']);
+        return Auth::user()->getGroup();
     }
 
-    public function addMember(int $userId): void
+    public function update(string $name): FamilyGroup
     {
-        $authUser = Auth::user();
+        $group      = Auth::user()->getGroup();
 
-        throw_unless(
-            $authUser->group_id,
-            HandledException::class,
-            'Group not found',
-            404
-        );
+                    $this->familyGroupRepository->update(
+                        ['id' => $group->id], 
+                        ['name' => $name]
+                    );
 
-        $user = $this->userRepository->firstWhere([
-            'id' => $userId,
-        ], ['id', 'name']);
+        return $group->refresh();
+    }
 
-        throw_unless(
-            $user,
-            HandledException::class,
-            'User not found',
-            404
-        );
+    public function delete(): void
+    {
+        $group      = Auth::user()->getGroup();
+        $userIds    = $this->userRepository
+                        ->getWhere(['group_id' => $group->id], ['id'])
+                        ->pluck('id')
+                        ->all();
 
-        $this->userRepository->update([
-            'id' => $userId,
-        ], [
-            'group_id' => $authUser->group_id,
-        ]);
+                    $this->deleteUsersChatsHandler->handle($userIds);
+                    $this->userRepository->update(
+                        ['group_id' => $group->id], 
+                        ['group_id' => null]
+                    );
+                    $this->familyGroupLinkRequestRepository->deleteByGroupId($group->id);
+                    $this->familyGroupLinkRepository->delete(['group_id' => $group->id]);
+                    $this->familyGroupRepository->delete(['id' => $group->id]);
     }
 }

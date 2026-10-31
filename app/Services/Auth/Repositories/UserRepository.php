@@ -57,4 +57,13 @@ class UserRepository extends AbstractRepository implements CreateContract, Updat
 
         return $token;
     }
+
+
+    public function current(int $userId): User|null
+    {
+        return $this->model->query()
+            ->withExists('joinRequest as is_pending_request')
+            ->where('id', $userId)
+            ->first();
+    }
 }

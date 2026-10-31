@@ -18,8 +18,8 @@ use Illuminate\{
 class ChatService
 {
     public function __construct(
-        private readonly CreateChatHandler $createChatHandler,
-        private readonly ChatRepository $chatRepository,
+        private readonly CreateChatHandler  $createChatHandler,
+        private readonly ChatRepository     $chatRepository,
     )
     {
     }

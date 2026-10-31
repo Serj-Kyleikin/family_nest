@@ -27,4 +27,11 @@ class ChatDiscussionRepository extends AbstractRepository implements CreateContr
             ->with(['user:id,name'])
             ->get();
     }
+
+    public function deleteByChatIds(array $chatIds): void
+    {
+        $this->model->query()
+            ->whereIn('chat_id', $chatIds)
+            ->delete();
+    }
 }

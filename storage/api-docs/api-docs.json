@@ -192,6 +192,28 @@
                 "summary": "Получить чаты пользователя с последним сообщением",
                 "operationId": "chatList",
                 "responses": {
+                    "200": {
+                        "description": "Chats list",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ChatWithLastDiscussionAndMembers"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "401": {
                         "description": "Unauthorized"
                     }
@@ -229,7 +251,7 @@
                     }
                 },
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "Chat created successfully",
                         "content": {
                             "application/json": {
@@ -253,6 +275,62 @@
                     },
                     "403": {
                         "description": "Попытка создать чат с самим собой"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/chat/search": {
+            "get": {
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Поиск чатов по тексту сообщений",
+                "operationId": "chatSearch",
+                "parameters": [
+                    {
+                        "name": "text",
+                        "in": "query",
+                        "description": "Текст для поиска в сообщениях",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "привет"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Chats found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/ChatWithLastDiscussionAndMembers"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "422": {
                         "description": "Validation error"
@@ -1415,16 +1493,16 @@
             }
         },
         "/api/family/group": {
-            "post": {
+            "get": {
                 "tags": [
-                    "Family"
+                    "Family Group"
                 ],
-                "summary": "Create family group",
-                "description": "Creates a new family group.",
-                "operationId": "createFamilyGroup",
+                "summary": "Получить семейную группу",
+                "description": "Возвращает семейную группу текущего пользователя.",
+                "operationId": "familyGroupShow",
                 "responses": {
-                    "201": {
-                        "description": "Group created successfully",
+                    "200": {
+                        "description": "Группа успешно получена",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1433,9 +1511,8 @@
                                             "type": "boolean",
                                             "example": true
                                         },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Group created successfully."
+                                        "data": {
+                                            "$ref": "#/components/schemas/FamilyGroup"
                                         }
                                     },
                                     "type": "object"
@@ -1444,7 +1521,125 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthenticated",
+                        "description": "Пользователь не авторизован"
+                    },
+                    "404": {
+                        "description": "Группа не найдена"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Family Group"
+                ],
+                "summary": "Изменить семейную группу",
+                "description": "Изменяет название семейной группы текущего пользователя и возвращает обновлённую группу.",
+                "operationId": "familyGroupUpdate",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Ивановы"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Группа успешно обновлена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "status",
+                                        "message"
+                                    ],
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/FamilyGroup"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Группа успешно обновлена."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован"
+                    },
+                    "404": {
+                        "description": "Группа не найдена"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Family Group"
+                ],
+                "summary": "Создать семейную группу",
+                "description": "Создаёт новую семейную группу, привязывает к ней текущего пользователя и возвращает созданную группу.",
+                "operationId": "createFamilyGroup",
+                "responses": {
+                    "201": {
+                        "description": "Группа успешно создана",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "status",
+                                        "message"
+                                    ],
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/FamilyGroup"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Группа успешно создана."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1460,7 +1655,324 @@
                         }
                     },
                     "403": {
-                        "description": "Group is already created"
+                        "description": "Группа уже создана"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Family Group"
+                ],
+                "summary": "Удалить семейную группу",
+                "description": "Удаляет семейную группу текущего пользователя, отвязывает от неё всех участников и удаляет чаты, в которых состоят только участники этой группы.",
+                "operationId": "familyGroupDestroy",
+                "responses": {
+                    "200": {
+                        "description": "Группа успешно удалена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "status",
+                                        "message"
+                                    ],
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Группа успешно удалена."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован"
+                    },
+                    "404": {
+                        "description": "Группа не найдена"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/family/group/link": {
+            "get": {
+                "tags": [
+                    "Family Link"
+                ],
+                "summary": "Получить свою ссылку-приглашение",
+                "description": "Возвращает действующую ссылку-приглашение семейной группы текущего пользователя.",
+                "operationId": "familyLinkShow",
+                "responses": {
+                    "200": {
+                        "description": "Ссылка-приглашение успешно получена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/FamilyGroupLink"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован"
+                    },
+                    "404": {
+                        "description": "Группа или ссылка не найдены"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Family Link"
+                ],
+                "summary": "Создать ссылку-приглашение",
+                "description": "Создаёт ссылку-приглашение в семейную группу текущего пользователя. Ранее созданная ссылка перестаёт действовать.",
+                "operationId": "familyLinkCreate",
+                "responses": {
+                    "201": {
+                        "description": "Ссылка-приглашение успешно создана",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "status",
+                                        "message"
+                                    ],
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/FamilyGroupLink"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ссылка-приглашение успешно создана."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован"
+                    },
+                    "404": {
+                        "description": "Группа не найдена"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/family/group/requests": {
+            "get": {
+                "tags": [
+                    "Family Link"
+                ],
+                "summary": "Получить обращения о принятии в группу",
+                "description": "Возвращает необработанные обращения пользователей, перешедших по ссылке-приглашению семейной группы текущего пользователя.",
+                "operationId": "familyLinkRequestIndex",
+                "responses": {
+                    "200": {
+                        "description": "Обращения успешно получены",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/FamilyGroupLinkRequest"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован"
+                    },
+                    "404": {
+                        "description": "Группа не найдена"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/family/group/join": {
+            "post": {
+                "tags": [
+                    "Family Link"
+                ],
+                "summary": "Создать обращение о принятии в группу",
+                "description": "Создаёт обращение о принятии в семейную группу по токену ссылки-приглашения от текущего пользователя, не состоящего в группе. Пока у пользователя есть необработанное обращение, создать новое нельзя.",
+                "operationId": "familyLinkRequestStore",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "token"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "type": "string",
+                                        "example": "k3J9xQ2mV8aLpR5tZ1wY7cBn4dFhGs6uEoXiAjKq"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Обращение успешно создано",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "status",
+                                        "message"
+                                    ],
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/FamilyGroupLinkRequest"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Обращение успешно создано."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован"
+                    },
+                    "403": {
+                        "description": "Пользователь уже состоит в группе или у него уже есть созданное необработанное обращение"
+                    },
+                    "404": {
+                        "description": "Ссылка не найдена"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/family/group/requests/{user_id}/add": {
+            "put": {
+                "tags": [
+                    "Family Link"
+                ],
+                "summary": "Принять пользователя в семейную группу",
+                "description": "Принимает в семейную группу текущего пользователя пользователя, который перешёл по ссылке-приглашению и создал обращение. Обращение получает статус done.",
+                "operationId": "familyLinkRequestAddByUserId",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "ID пользователя, создавшего обращение",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 5
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пользователь успешно принят в группу",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "status",
+                                        "message"
+                                    ],
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Пользователь успешно принят в группу."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован"
+                    },
+                    "403": {
+                        "description": "Пользователь уже состоит в группе"
+                    },
+                    "404": {
+                        "description": "Пользователь, обращение или группа не найдены"
                     }
                 },
                 "security": [
@@ -1475,12 +1987,12 @@
                 "tags": [
                     "Family"
                 ],
-                "summary": "Get family group members",
-                "description": "Returns all members of the authenticated user's family group.",
+                "summary": "Получить участников семейной группы",
+                "description": "Возвращает всех участников семейной группы текущего пользователя.",
                 "operationId": "getFamilyGroupMembers",
                 "responses": {
                     "200": {
-                        "description": "Members retrieved successfully",
+                        "description": "Участники успешно получены",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1492,26 +2004,7 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "integer",
-                                                        "example": 1
-                                                    },
-                                                    "name": {
-                                                        "type": "string",
-                                                        "example": "John Doe"
-                                                    },
-                                                    "email": {
-                                                        "type": "string",
-                                                        "format": "email",
-                                                        "example": "john.doe@example.com"
-                                                    },
-                                                    "group_id": {
-                                                        "type": "integer",
-                                                        "example": 1
-                                                    }
-                                                },
-                                                "type": "object"
+                                                "$ref": "#/components/schemas/FamilyMember"
                                             }
                                         }
                                     },
@@ -1521,23 +2014,10 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthenticated",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Пользователь не авторизован"
                     },
                     "404": {
-                        "description": "Group not found"
+                        "description": "Группа не найдена"
                     }
                 },
                 "security": [
@@ -1547,36 +2027,29 @@
                 ]
             }
         },
-        "/api/family/group/members/add": {
-            "post": {
+        "/api/family/group/members/{user_id}": {
+            "get": {
                 "tags": [
                     "Family"
                 ],
-                "summary": "Add member to family group",
-                "description": "Adds a new member to the authenticated user's family group.",
-                "operationId": "addFamilyGroupMember",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "user_id"
-                                ],
-                                "properties": {
-                                    "user_id": {
-                                        "type": "integer",
-                                        "example": 5
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
+                "summary": "Получить участника семейной группы",
+                "description": "Возвращает участника семейной группы текущего пользователя.",
+                "operationId": "familyMemberShow",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "ID участника группы",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 5
                     }
-                },
+                ],
                 "responses": {
                     "200": {
-                        "description": "Member added successfully",
+                        "description": "Участник успешно получен",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1585,9 +2058,8 @@
                                             "type": "boolean",
                                             "example": true
                                         },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Member added successfully."
+                                        "data": {
+                                            "$ref": "#/components/schemas/FamilyMember"
                                         }
                                     },
                                     "type": "object"
@@ -1596,14 +2068,55 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthenticated",
+                        "description": "Пользователь не авторизован"
+                    },
+                    "404": {
+                        "description": "Группа или участник не найдены"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Family"
+                ],
+                "summary": "Исключить участника из семейной группы",
+                "description": "Исключает участника из семейной группы текущего пользователя.",
+                "operationId": "familyMemberDestroy",
+                "parameters": [
+                    {
+                        "name": "user_id",
+                        "in": "path",
+                        "description": "ID участника группы",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 5
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Участник успешно исключён",
                         "content": {
                             "application/json": {
                                 "schema": {
+                                    "required": [
+                                        "status",
+                                        "message"
+                                    ],
                                     "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
                                         "message": {
                                             "type": "string",
-                                            "example": "Unauthenticated."
+                                            "example": "Участник успешно исключён."
                                         }
                                     },
                                     "type": "object"
@@ -1611,11 +2124,50 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "User or group not found"
+                    "401": {
+                        "description": "Пользователь не авторизован"
                     },
-                    "422": {
-                        "description": "Validation error"
+                    "404": {
+                        "description": "Группа или участник не найдены"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/user/current": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Получить текущего пользователя",
+                "description": "Возвращает авторизованного пользователя с его семейной группой и признаком is_pending_request: true, если у пользователя есть необработанное обращение о принятии в группу. Если группы нет, поле group равно null.",
+                "operationId": "userCurrent",
+                "responses": {
+                    "200": {
+                        "description": "Пользователь успешно получен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/CurrentUser"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован"
                     }
                 },
                 "security": [
@@ -1721,6 +2273,80 @@
                 },
                 "type": "object"
             },
+            "FamilyGroup": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Ивановы",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-06-14 12:00:00"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-06-14 12:00:00"
+                    }
+                },
+                "type": "object"
+            },
+            "FamilyGroupLink": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "group_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "token": {
+                        "type": "string",
+                        "example": "k3J9xQ2mV8aLpR5tZ1wY7cBn4dFhGs6uEoXiAjKq"
+                    },
+                    "is_active": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "FamilyGroupLinkRequest": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "link_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "pending",
+                        "enum": [
+                            "pending",
+                            "done",
+                            "canceled"
+                        ]
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/UserName"
+                    }
+                },
+                "type": "object"
+            },
             "UserName": {
                 "properties": {
                     "id": {
@@ -1732,6 +2358,56 @@
                         "description": "Имя пользователя",
                         "type": "string",
                         "example": "Кира Найтли"
+                    }
+                },
+                "type": "object"
+            },
+            "CurrentUser": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Иван Иванов"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "ivan@example.com"
+                    },
+                    "group_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "group": {
+                        "$ref": "#/components/schemas/FamilyGroup"
+                    },
+                    "is_pending_request": {
+                        "type": "boolean",
+                        "example": false
+                    }
+                },
+                "type": "object"
+            },
+            "FamilyMember": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 5
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Иван Иванов"
+                    },
+                    "group_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "group": {
+                        "$ref": "#/components/schemas/FamilyGroup"
                     }
                 },
                 "type": "object"
@@ -1759,8 +2435,20 @@
             "description": "Expenses"
         },
         {
+            "name": "Family Group",
+            "description": "Family Group"
+        },
+        {
+            "name": "Family Link",
+            "description": "Family Link"
+        },
+        {
             "name": "Family",
             "description": "Family"
+        },
+        {
+            "name": "User",
+            "description": "User"
         }
     ]
 }

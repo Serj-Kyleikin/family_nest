@@ -4,7 +4,7 @@ namespace App\Http\Requests\Api\Family\Group;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AddMemberRequest extends FormRequest
+class FamilyLinkRequestStoreRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,20 +14,15 @@ class AddMemberRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => [
-                'required',
-                'integer'
-            ],
+            'token' => 'required|string',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'user_id' => [
-                'required'  => 'The field is required',
-                'integer'   => 'Invalid data type',
-            ]
+            'token.required'    => 'Поле обязательно для заполнения',
+            'token.string'      => 'Неверный тип данных',
         ];
     }
 }
