@@ -116,7 +116,7 @@ class ExpenseController extends Controller
         $groupId    = $request->input('group_id') !== null ? intval($request->input('group_id')) : null;
         $templateId = $request->input('template_id') !== null ? intval($request->input('template_id')) : null;
         $name       = $request->input('name') !== null ? strval($request->input('name')) : null;
-        $amount     = intval($request->input('amount'));
+        $amount     = strval($request->input('amount'));
 
         try {
             $this->expenseService->create($templateId, $name, $amount, $groupId);
@@ -179,7 +179,7 @@ class ExpenseController extends Controller
         $groupId    = $request->input('group_id') !== null ? intval($request->input('group_id')) : null;
         $templateId = $request->input('template_id') !== null ? intval($request->input('template_id')) : null;
         $name       = $request->input('name') !== null ? strval($request->input('name')) : null;
-        $amount     = intval($request->input('amount'));
+        $amount     = strval($request->input('amount'));
 
         try {
             $this->expenseService->update($id, $templateId, $name, $amount, $groupId);

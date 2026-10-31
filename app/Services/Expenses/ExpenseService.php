@@ -33,9 +33,9 @@ class ExpenseService
     {
         $userId = Auth::id();
 
-        if($templateId !== null) {
+        if (is_int($templateId)) {
 
-            $template = $this->expenseTemplateRepository->firstWhere(['id' => $templateId, 'is_active' => true]);
+            $template = $this->expenseTemplateRepository->firstForUser($templateId, $userId, true);
             throw_unless(
                 $template, 
                 HandledException::class, 
@@ -46,25 +46,25 @@ class ExpenseService
             $name       = $template->name;
             $groupId    = $groupId ? $groupId : $template->group_id;
         }
-
-        # ToDo: группа остальные 
-        $groupId        = $groupId ? $groupId : 1;
 
         $this->expenseRepository->create([
             'user_id'       => $userId,
             'group_id'      => $groupId,
+            'template_id'   => $templateId,
             'name'          => $name,
             'amount'        => $amount,
         ]);
     }
 
-    public function update(int $id, ?int $templateId, ?string $name, string $amount, ?int $groupId = null,): void 
+    public function update(int $id, ?int $templateId, ?string $name, string $amount, ?int $groupId = null): void 
     {
-        ExpenseRulesUtil::isExists($id);
+        $userId = Auth::id();
 
-        if($templateId !== null) {
+        ExpenseRulesUtil::isExists($id, $userId);
 
-            $template = $this->expenseTemplateRepository->firstWhere(['id' => $templateId, 'is_active' => true]);
+        if (is_int($templateId)) {
+
+            $template = $this->expenseTemplateRepository->firstForUser($templateId, $userId, true);
             throw_unless(
                 $template, 
                 HandledException::class, 
@@ -76,16 +76,24 @@ class ExpenseService
             $groupId    = $groupId ? $groupId : $template->group_id;
         }
 
-        $this->expenseRepository->update(['id' => $id], [
-            'group_id'      => $groupId,
+        $data = [
+            'template_id'   => $templateId,
             'name'          => $name,
             'amount'        => $amount,
-        ]);
+        ];
+
+        if (filled($groupId)) {
+            $data['group_id'] = $groupId;
+        }
+
+        $this->expenseRepository->update(['id' => $id, 'user_id' => $userId], $data);
     }
 
     public function delete(int $id): void
     {
-        ExpenseRulesUtil::isExists($id);
-        $this->expenseRepository->delete(['id' => $id]);
+        $userId = Auth::id();
+
+        ExpenseRulesUtil::isExists($id, $userId);
+        $this->expenseRepository->delete(['id' => $id, 'user_id' => $userId]);
     }
 }

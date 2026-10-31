@@ -33,23 +33,9 @@ class AuthController extends Controller
                 type: 'object',
                 required: ['name', 'email', 'password'],
                 properties: [
-                    new OA\Property(
-                        property: 'name',
-                        type: 'string',
-                        example: 'Ivan'
-                    ),
-                    new OA\Property(
-                        property: 'email',
-                        type: 'string',
-                        format: 'email',
-                        example: 'ivan@example.com'
-                    ),
-                    new OA\Property(
-                        property: 'password',
-                        type: 'string',
-                        format: 'password',
-                        example: 'password123'
-                    ),
+                    new OA\Property(property: 'name', type: 'string', example: 'Ivan'),
+                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'ivan@example.com'),
+                    new OA\Property(property: 'password', type: 'string', format: 'password', example: 'password123'),
                 ]
             )
         ),
@@ -60,39 +46,20 @@ class AuthController extends Controller
                 content: new OA\JsonContent(
                     type: 'object',
                     properties: [
-                        new OA\Property(
-                            property: 'status',
-                            type: 'boolean',
-                            example: true
-                        ),
-                        new OA\Property(
-                            property: 'message',
-                            type: 'string',
-                            example: 'User registered successfully.'
-                        ),
+                        new OA\Property(property: 'status', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: 'User registered successfully.'),
                         new OA\Property(
                             property: 'data',
                             type: 'object',
                             properties: [
-                                new OA\Property(
-                                    property: 'token',
-                                    type: 'string',
-                                    example: '1|plainTextTokenExample'
-                                ),
-                                new OA\Property(
-                                    property: 'token_type',
-                                    type: 'string',
-                                    example: 'Bearer'
-                                ),
+                                new OA\Property(property: 'token', type: 'string', example: '1|plainTextTokenExample'),
+                                new OA\Property(property: 'token_type', type: 'string', example: 'Bearer'),
                             ]
                         ),
                     ]
                 )
             ),
-            new OA\Response(
-                response: 422,
-                description: 'Validation error'
-            ),
+            new OA\Response(response: 422, description: 'Validation error'),
         ]
     )]
     public function signUp(SignUpRequest $request, SignUpDTOFactory $signUpDTOFactory): JsonResponse
@@ -127,18 +94,8 @@ class AuthController extends Controller
                 type: 'object',
                 required: ['email', 'password'],
                 properties: [
-                    new OA\Property(
-                        property: 'email',
-                        type: 'string',
-                        format: 'email',
-                        example: 'admin@mail.ru'
-                    ),
-                    new OA\Property(
-                        property: 'password',
-                        type: 'string',
-                        format: 'password',
-                        example: '12341234'
-                    ),
+                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'admin@mail.ru'),
+                    new OA\Property(property: 'password', type: 'string', format: 'password', example: '12341234'),
                 ]
             )
         ),
@@ -149,30 +106,14 @@ class AuthController extends Controller
                 content: new OA\JsonContent(
                     type: 'object',
                     properties: [
-                        new OA\Property(
-                            property: 'status',
-                            type: 'boolean',
-                            example: true
-                        ),
-                        new OA\Property(
-                            property: 'message',
-                            type: 'string',
-                            example: 'User authenticated successfully.'
-                        ),
+                        new OA\Property(property: 'status', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: 'User authenticated successfully.'),
                         new OA\Property(
                             property: 'data',
                             type: 'object',
                             properties: [
-                                new OA\Property(
-                                    property: 'token',
-                                    type: 'string',
-                                    example: '1|plainTextTokenExample'
-                                ),
-                                new OA\Property(
-                                    property: 'token_type',
-                                    type: 'string',
-                                    example: 'Bearer'
-                                ),
+                                new OA\Property(property: 'token', type: 'string', example: '1|plainTextTokenExample'),
+                                new OA\Property(property: 'token_type', type: 'string', example: 'Bearer'),
                             ]
                         ),
                     ]
@@ -184,23 +125,12 @@ class AuthController extends Controller
                 content: new OA\JsonContent(
                     type: 'object',
                     properties: [
-                        new OA\Property(
-                            property: 'status',
-                            type: 'boolean',
-                            example: false
-                        ),
-                        new OA\Property(
-                            property: 'message',
-                            type: 'string',
-                            example: 'Invalid credentials.'
-                        ),
+                        new OA\Property(property: 'status', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: 'Invalid credentials.'),
                     ]
                 )
             ),
-            new OA\Response(
-                response: 422,
-                description: 'Validation error'
-            ),
+            new OA\Response(response: 422, description: 'Validation error'),
         ]
     )]
     public function signIn(SignInRequest $request): JsonResponse
