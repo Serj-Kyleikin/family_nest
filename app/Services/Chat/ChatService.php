@@ -31,6 +31,13 @@ class ChatService
         return $this->chatRepository->getUserChats($userId);
     }
 
+    public function search(string $text): Collection
+    {
+        $userId = Auth::id();
+
+        return $this->chatRepository->getUserChats($userId, $text);
+    }
+
     public function create(int $userToId): Chat
     {
         return $this->createChatHandler->handle($userToId);

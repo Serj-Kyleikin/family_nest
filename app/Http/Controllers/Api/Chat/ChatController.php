@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Chat;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\{
+    Chat\ChatSearchRequest,
     Chat\ChatStoreRequest,
 };
 use App\Services\{
@@ -31,28 +32,82 @@ class ChatController extends Controller
         tags: ['Chat'],
         security: [['bearerAuth' => []]],
         responses: [
-            new OA\Property(
-                property: 'status',
-                type: 'boolean',
-                example: true
-            ),
-            new OA\Property(
-                property: 'data',
-                type: 'array',
-                items: new OA\Items(
-                    ref: '#/components/schemas/ChatWithLastDiscussionAndMembers'
+            new OA\Response(
+                response: 200,
+                description: 'Chats list',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'status', type: 'boolean', example: true),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'array',
+                            items: new OA\Items(ref: '#/components/schemas/ChatWithLastDiscussionAndMembers')
+                        ),
+                    ]
                 )
             ),
-            new OA\Response(
-                response: 401,
-                description: 'Unauthorized'
-            ),
+            new OA\Response(response: 401, description: 'Unauthorized'),
         ]
     )]
     public function index(): JsonResponse
     {
         try {
             $chats = $this->chatService->index();
+
+            return response()->json([
+                'status'    => true,
+                'data'      => $chats,
+            ], Response::HTTP_OK);
+
+        } catch (\Exception $exception) {
+
+            return $this->error($exception);
+        }
+    }
+
+    #[OA\Get(
+        path: '/api/chat/search',
+        operationId: 'chatSearch',
+        summary: 'Поиск чатов по тексту сообщений',
+        tags: ['Chat'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'text',
+                in: 'query',
+                required: true,
+                description: 'Текст для поиска в сообщениях',
+                schema: new OA\Schema(type: 'string'),
+                example: 'привет'
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Chats found',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'status', type: 'boolean', example: true),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'array',
+                            items: new OA\Items(ref: '#/components/schemas/ChatWithLastDiscussionAndMembers')
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(response: 401, description: 'Unauthorized'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ]
+    )]
+    public function search(ChatSearchRequest $request): JsonResponse
+    {
+        $text = strval($request->input('text'));
+
+        try {
+            $chats = $this->chatService->search($text);
 
             return response()->json([
                 'status'    => true,
@@ -87,7 +142,7 @@ class ChatController extends Controller
         ),
         responses: [
             new OA\Response(
-                response: 201,
+                response: 200,
                 description: 'Chat created successfully',
                 content: new OA\JsonContent(
                     type: 'object',
