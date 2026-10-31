@@ -31,22 +31,22 @@ class ExpenseTemplateGroupController extends Controller
         tags: ['Expenses'],
         security: [['bearerAuth' => []]],
         responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Groups list',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'status', type: 'boolean', example: true),
-                        new OA\Property(
-                            property: 'data',
-                            type: 'array',
-                            items: new OA\Items(
-                                ref: '#/components/schemas/TemplateGroupWithTemplates'
-                            )
-                        ),
-                    ]
-                )
-            ),
+            // new OA\Response(
+            //     response: 200,
+            //     description: 'Groups list',
+            //     content: new OA\JsonContent(
+            //         properties: [
+            //             new OA\Property(property: 'status', type: 'boolean', example: true),
+            //             new OA\Property(
+            //                 property: 'data',
+            //                 type: 'array',
+            //                 items: new OA\Items(
+            //                     ref: '#/components/schemas/TemplateGroupWithTemplates'
+            //                 )
+            //             ),
+            //         ]
+            //     )
+            // ),
             new OA\Response(response: 401, description: 'Unauthorized'),
         ]
     )]
@@ -128,20 +128,20 @@ class ExpenseTemplateGroupController extends Controller
             ),
         ],
         responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Group show',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'status', type: 'boolean', example: true),
-                        new OA\Property(
-                            property: 'data',
-                            type: 'object',
-                            ref: '#/components/schemas/TemplateGroup'
-                        ),
-                    ]
-                )
-            ),
+            // new OA\Response(
+            //     response: 200,
+            //     description: 'Group show',
+            //     content: new OA\JsonContent(
+            //         properties: [
+            //             new OA\Property(property: 'status', type: 'boolean', example: true),
+            //             new OA\Property(
+            //                 property: 'data',
+            //                 type: 'object',
+            //                 ref: '#/components/schemas/TemplateGroup'
+            //             ),
+            //         ]
+            //     )
+            // ),
             new OA\Response(response: 401, description: 'Unauthorized'),
             new OA\Response(response: 404, description: 'Not found'),
         ]

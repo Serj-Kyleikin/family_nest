@@ -39,22 +39,22 @@ class ExpenseController extends Controller
             ),
         ],
         responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Expenses list',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'status', type: 'boolean', example: true),
-                        new OA\Property(
-                            property: 'data',
-                            type: 'array',
-                            items: new OA\Items(
-                                ref: '#/components/schemas/ExpensesList'
-                            )
-                        ),
-                    ]
-                )
-            ),
+            // new OA\Response(
+            //     response: 200,
+            //     description: 'Expenses list',
+            //     content: new OA\JsonContent(
+            //         properties: [
+            //             new OA\Property(property: 'status', type: 'boolean', example: true),
+            //             new OA\Property(
+            //                 property: 'data',
+            //                 type: 'array',
+            //                 items: new OA\Items(
+            //                     ref: '#/components/schemas/ExpensesList'
+            //                 )
+            //             ),
+            //         ]
+            //     )
+            // ),
             new OA\Response(response: 401, description: 'Unauthorized'),
         ]
     )]
