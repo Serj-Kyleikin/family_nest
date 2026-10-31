@@ -38,6 +38,7 @@ class Update extends OA\Put
                                 properties: [
                                                 new OA\Property(property: 'group_id',  type: 'integer', example: 1),
                                                 new OA\Property(property: 'name',      type: 'string',  example: 'Молоко'),
+                                                new OA\Property(property: 'price',     type: 'string',  example: '89.90', nullable: true),
                                                 new OA\Property(property: 'is_active', type: 'boolean', example: true),
                                             ]
                             )

@@ -16,6 +16,7 @@ class TemplateStoreRequest extends FormRequest
         return [
             'group_id'  => 'required|integer',
             'name'      => 'required|string|max:255',
+            'price'     => 'nullable|numeric|decimal:0,2|min:0',
             'is_active' => 'nullable|boolean',
         ];
     }

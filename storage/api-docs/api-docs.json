@@ -790,6 +790,128 @@
                 ]
             }
         },
+        "/api/chat/socket": {
+            "get": {
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Получить ключ WebSocket-сервера",
+                "description": "Возвращает публичный ключ приложения для подключения к WebSocket-серверу по адресу /app/{app_key}.",
+                "operationId": "chatSocketConfig",
+                "responses": {
+                    "200": {
+                        "description": "Ключ успешно получен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "app_key": {
+                                                    "type": "string",
+                                                    "example": "a1b2c3d4e5f6a7b8c9d0"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/chat/socket/auth": {
+            "post": {
+                "tags": [
+                    "Chat"
+                ],
+                "summary": "Авторизовать подписку на приватный канал WebSocket",
+                "description": "Возвращает подпись для подписки на канал private-user.{id} текущего пользователя или private-chat.{id} чата, в котором он состоит, в формате Pusher: app_key:signature.",
+                "operationId": "chatSocketAuth",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "socket_id",
+                                    "channel_name"
+                                ],
+                                "properties": {
+                                    "socket_id": {
+                                        "description": "Идентификатор соединения из pusher:connection_established",
+                                        "type": "string",
+                                        "example": "123456.654321"
+                                    },
+                                    "channel_name": {
+                                        "description": "Имя канала: private-user.{id} или private-chat.{id}",
+                                        "type": "string",
+                                        "example": "private-chat.1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Подпись успешно получена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "auth": {
+                                                    "type": "string",
+                                                    "example": "a1b2c3d4e5f6a7b8c9d0:9f86d081884c7d659a2feaa0c55ad015"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован"
+                    },
+                    "403": {
+                        "description": "Канал недоступен пользователю или пользователь не участник чата"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/expenses": {
             "get": {
                 "tags": [

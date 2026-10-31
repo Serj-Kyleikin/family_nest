@@ -17,6 +17,7 @@ class ExpenseTemplate extends Model
     protected $fillable = [
         'group_id',
         'name',
+        'price',
         'is_active',
     ];
 

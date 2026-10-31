@@ -28,10 +28,11 @@ class ExpenseTemplateController extends Controller
     {
         $groupId    = intval($request->input('group_id'));
         $name       = strval($request->input('name'));
+        $price      = $request->filled('price') ? strval($request->input('price')) : null;
         $isActive   = boolval($request->boolean('is_active', true));
 
         try {
-            $this->expenseTemplateService->create($groupId, $name, $isActive);
+            $this->expenseTemplateService->create($groupId, $name, $price, $isActive);
 
             return response()->json([
                 'status'    => true,
@@ -64,10 +65,11 @@ class ExpenseTemplateController extends Controller
     {
         $groupId    = intval($request->input('group_id'));
         $name       = strval($request->input('name'));
+        $price      = $request->filled('price') ? strval($request->input('price')) : null;
         $isActive   = boolval($request->boolean('is_active', true));
 
         try {
-            $this->expenseTemplateService->update($id, $groupId, $name, $isActive);
+            $this->expenseTemplateService->update($id, $groupId, $name, $price, $isActive);
 
             return response()->json([
                 'status'    => true,

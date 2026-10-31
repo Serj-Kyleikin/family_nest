@@ -20,7 +20,7 @@ class ExpenseTemplateService
     ) {
     }
 
-    public function create(int $groupId, string $name, bool $isActive = true): void
+    public function create(int $groupId, string $name, ?string $price = null, bool $isActive = true): void
     {
         $userId = Auth::id();
 
@@ -29,6 +29,7 @@ class ExpenseTemplateService
         $this->expenseTemplateRepository->create([
             'group_id'  => $groupId,
             'name'      => $name,
+            'price'     => $price,
             'is_active' => $isActive,
         ]);
     }
@@ -48,7 +49,7 @@ class ExpenseTemplateService
         return $template;
     }
 
-    public function update(int $id, int $groupId, string $name, bool $isActive): void
+    public function update(int $id, int $groupId, string $name, ?string $price, bool $isActive): void
     {
         $userId = Auth::id();
 
@@ -58,6 +59,7 @@ class ExpenseTemplateService
         $this->expenseTemplateRepository->update(['id' => $id], [
             'group_id'  => $groupId,
             'name'      => $name,
+            'price'     => $price,
             'is_active' => $isActive,
         ]);
     }
