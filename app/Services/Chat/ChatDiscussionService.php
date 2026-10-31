@@ -3,6 +3,7 @@
 namespace App\Services\Chat;
 
 use App\Services\{
+    Chat\Handler\PublishChatEventHandler,
     Chat\Repositories\ChatDiscussionRepository,
     Chat\Util\ChatRulesUtil,
 };
@@ -14,7 +15,8 @@ use Illuminate\{
 class ChatDiscussionService
 {
     public function __construct(
-        private readonly ChatDiscussionRepository $chatDiscussionRepository,
+        private readonly ChatDiscussionRepository   $chatDiscussionRepository,
+        private readonly PublishChatEventHandler    $publishChatEventHandler,
     )
     {
     }
@@ -29,6 +31,9 @@ class ChatDiscussionService
             'user_id'   => $senderId,
             'text'      => $text
         ]);
+
+        $this->publishChatEventHandler->handleUpdated($chatId);
+        $this->publishChatEventHandler->handleMessage($chatId, $senderId, strval(Auth::user()->name), $text);
     }
 
     public function update(int $chatId, int $discussionId, string|null $text = null): void
@@ -41,6 +46,8 @@ class ChatDiscussionService
             ['id' => $discussionId],
             ['text' => $text]
         );
+
+        $this->publishChatEventHandler->handleUpdated($chatId);
     }
 
     public function delete(int $chatId, int $discussionId): void
@@ -50,6 +57,8 @@ class ChatDiscussionService
         ChatRulesUtil::isDiscussionBelongsToChatAndUser($chatId, $discussionId, $senderId);
 
         $this->chatDiscussionRepository->delete(['id' => $discussionId]);
+
+        $this->publishChatEventHandler->handleUpdated($chatId);
     }
 
     public function searchByText(int $chatId, string $text): Collection
@@ -67,5 +76,7 @@ class ChatDiscussionService
         ChatRulesUtil::areDiscussionsBelongsToChat($chatId, $senderId, $lookedDiscussionsIds);
 
         $this->chatDiscussionRepository->updateWhereIn('id', $lookedDiscussionsIds, ['is_read' => 1]);
+
+        $this->publishChatEventHandler->handleUpdated($chatId);
     }
 }

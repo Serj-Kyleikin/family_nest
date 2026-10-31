@@ -28,6 +28,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'websock' => [
+        'url'    => env('WEBSOCK_URL'),
+        'key'    => env('WEBSOCK_APP_KEY'),
+        'secret' => env('WEBSOCK_APP_SECRET'),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),

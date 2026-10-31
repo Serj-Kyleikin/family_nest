@@ -13,6 +13,9 @@ class ChatMembers extends Model
 {
     use HasFactory;
 
+    public const USER_CHANNEL_PREFIX = 'private-user.';
+    public const CHAT_CHANNEL_PREFIX = 'private-chat.';
+
     protected $table    = 'chats_members';
     protected $guarded  = ['id'];
     public $timestamps  = false;

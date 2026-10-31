@@ -44,6 +44,28 @@ class ChatRulesUtil
     /**
      * @throws \Throwable
      */
+    public static function isChannelAvailableForUser(string $channelName, int $userId): void
+    {
+        $chatChannelPattern = '/^' . preg_quote(ChatMembers::CHAT_CHANNEL_PREFIX, '/') . '(\d+)$/';
+        $isChatChannel      = preg_match($chatChannelPattern, $channelName, $matches) === 1;
+
+        if ($isChatChannel) {
+            self::isUserMemberOfThisChat(intval($matches[1]), $userId);
+
+            return;
+        }
+
+        throw_if(
+            $channelName !== ChatMembers::USER_CHANNEL_PREFIX . $userId,
+            Exception::class,
+            "Channel is not available for this user",
+            Response::HTTP_FORBIDDEN
+        );
+    }
+
+    /**
+     * @throws \Throwable
+     */
     public static function isDiscussionBelongsToChatAndUser(int $chatId, int $discussionId, int $userId): void
     {
         $chatDiscussion = ChatDiscussion::where(['id' => $discussionId, 'chat_id' => $chatId, 'user_id' => $userId])->first();
