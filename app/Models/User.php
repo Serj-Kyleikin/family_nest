@@ -43,6 +43,7 @@ use Symfony\Component\HttpFoundation\Response;
         new OA\Property(property: 'group_id',           type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'group',              type: 'object',  ref: '#/components/schemas/FamilyGroup'),
         new OA\Property(property: 'is_pending_request', type: 'boolean', example: false),
+        new OA\Property(property: 'link_token',         type: 'string',  example: 'k3J9xQ2mV8aLpR5tZ1wY7cBn4dFhGs6uEoXiAjKq', nullable: true),
     ]
 )]
 #[OA\Schema(

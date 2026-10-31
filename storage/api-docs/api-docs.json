@@ -16,8 +16,8 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Register new user",
-                "description": "Creates a new user and returns API auth token.",
+                "summary": "Зарегистрировать пользователя",
+                "description": "Создаёт нового пользователя и возвращает токен авторизации. Если передан join_token, пользователь сразу добавляется в семейную группу активной ссылки-приглашения без создания обращения о принятии. Если ссылка не найдена или неактивна, join_token игнорируется и пользователь создаётся без группы.",
                 "operationId": "authSignUp",
                 "requestBody": {
                     "required": true,
@@ -32,7 +32,7 @@
                                 "properties": {
                                     "name": {
                                         "type": "string",
-                                        "example": "Ivan"
+                                        "example": "Иван Иванов"
                                     },
                                     "email": {
                                         "type": "string",
@@ -43,6 +43,11 @@
                                         "type": "string",
                                         "format": "password",
                                         "example": "password123"
+                                    },
+                                    "join_token": {
+                                        "type": "string",
+                                        "example": "k3J9xQ2mV8aLpR5tZ1wY7cBn4dFhGs6uEoXiAjKq",
+                                        "nullable": true
                                     }
                                 },
                                 "type": "object"
@@ -52,18 +57,18 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "User registered successfully",
+                        "description": "Пользователь успешно зарегистрирован",
                         "content": {
                             "application/json": {
                                 "schema": {
+                                    "required": [
+                                        "status",
+                                        "message"
+                                    ],
                                     "properties": {
                                         "status": {
                                             "type": "boolean",
                                             "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "User registered successfully."
                                         },
                                         "data": {
                                             "properties": {
@@ -77,6 +82,10 @@
                                                 }
                                             },
                                             "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User registered successfully."
                                         }
                                     },
                                     "type": "object"
@@ -85,7 +94,7 @@
                         }
                     },
                     "422": {
-                        "description": "Validation error"
+                        "description": "Ошибка валидации"
                     }
                 }
             }
@@ -95,8 +104,8 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Authenticate user",
-                "description": "Authenticates user and returns API auth token.",
+                "summary": "Авторизовать пользователя",
+                "description": "Проверяет email и пароль пользователя и возвращает токен авторизации.",
                 "operationId": "authSignIn",
                 "requestBody": {
                     "required": true,
@@ -126,7 +135,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "User authenticated successfully",
+                        "description": "Пользователь успешно авторизован",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -134,10 +143,6 @@
                                         "status": {
                                             "type": "boolean",
                                             "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "User authenticated successfully."
                                         },
                                         "data": {
                                             "properties": {
@@ -151,6 +156,10 @@
                                                 }
                                             },
                                             "type": "object"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User authenticated successfully."
                                         }
                                     },
                                     "type": "object"
@@ -159,7 +168,7 @@
                         }
                     },
                     "401": {
-                        "description": "Invalid credentials",
+                        "description": "Неверный email или пароль",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -179,7 +188,7 @@
                         }
                     },
                     "422": {
-                        "description": "Validation error"
+                        "description": "Ошибка валидации"
                     }
                 }
             }
@@ -1608,7 +1617,7 @@
                     "Family Group"
                 ],
                 "summary": "Создать семейную группу",
-                "description": "Создаёт новую семейную группу, привязывает к ней текущего пользователя и возвращает созданную группу.",
+                "description": "Создаёт новую семейную группу, привязывает к ней текущего пользователя, создаёт активную ссылку-приглашение и возвращает созданную группу.",
                 "operationId": "createFamilyGroup",
                 "responses": {
                     "201": {
@@ -2144,7 +2153,7 @@
                     "User"
                 ],
                 "summary": "Получить текущего пользователя",
-                "description": "Возвращает авторизованного пользователя с его семейной группой и признаком is_pending_request: true, если у пользователя есть необработанное обращение о принятии в группу. Если группы нет, поле group равно null.",
+                "description": "Возвращает авторизованного пользователя с его семейной группой и признаком is_pending_request: true, если у пользователя есть необработанное обращение о принятии в группу. Если группы нет, поле group равно null. Поле link_token содержит токен активной ссылки-приглашения группы пользователя, либо null, если группы или активной ссылки нет.",
                 "operationId": "userCurrent",
                 "responses": {
                     "200": {
@@ -2388,6 +2397,11 @@
                     "is_pending_request": {
                         "type": "boolean",
                         "example": false
+                    },
+                    "link_token": {
+                        "type": "string",
+                        "example": "k3J9xQ2mV8aLpR5tZ1wY7cBn4dFhGs6uEoXiAjKq",
+                        "nullable": true
                     }
                 },
                 "type": "object"

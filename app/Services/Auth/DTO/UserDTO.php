@@ -7,6 +7,7 @@ final class UserDTO
     private string $name;
     private string $email;
     private string $password;
+    private ?string $joinToken = null;
 
     public function setName(string $name): void
     {
@@ -36,5 +37,15 @@ final class UserDTO
     public function getPassword(): string
     {
         return $this->password;
+    }
+
+    public function setJoinToken(?string $joinToken): void
+    {
+        $this->joinToken = $joinToken;
+    }
+
+    public function getJoinToken(): ?string
+    {
+        return $this->joinToken;
     }
 }

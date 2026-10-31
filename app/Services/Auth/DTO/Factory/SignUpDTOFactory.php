@@ -16,6 +16,7 @@ final class SignUpDTOFactory
         $userDTO->setName($validated['name']);
         $userDTO->setEmail(mb_strtolower($validated['email']));
         $userDTO->setPassword($validated['password']);
+        $userDTO->setJoinToken($validated['join_token'] ?? null);
 
         return $userDTO;
     }

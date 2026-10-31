@@ -12,6 +12,7 @@ use App\Services\{
     Family\Util\GroupRulesUtil,
 };
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class FamilyGroupService
 {
@@ -35,6 +36,12 @@ class FamilyGroupService
                         ['id' => $user->id], 
                         ['group_id' => $groupId]
                     );
+
+                    $this->familyGroupLinkRepository->create([
+                        'group_id'  => $groupId,
+                        'token'     => Str::random(40),
+                        'is_active' => true,
+                    ]);
 
         return $group;
     }

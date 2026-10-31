@@ -35,15 +35,22 @@ class UserRepository extends AbstractRepository implements CreateContract, Updat
         return $this->createToken($user);
     }
 
-    public function signUp(UserDTO $userDTO): string
+    public function signUp(UserDTO $userDTO, ?int $groupId = null): string
     {
-        return DB::transaction(function () use ($userDTO) {
+        return DB::transaction(function () use ($userDTO, $groupId) {
 
             $user = $this->create([
                 'name'      => $userDTO->getName(),
                 'email'     => mb_strtolower($userDTO->getEmail()),
                 'password'  => Hash::make($userDTO->getPassword()),
             ]);
+
+            if ($groupId) {
+                $this->update(
+                    ['id' => $user->id],
+                    ['group_id' => $groupId]
+                );
+            }
 
             $user->assignRole('client');
 

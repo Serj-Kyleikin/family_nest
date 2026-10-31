@@ -28,6 +28,10 @@ class SignUpRequest extends AuthRequest
                 'unique:users,email',
             ],
             'password' => self::passwordRules(),
+            'join_token' => [
+                'nullable',
+                'string',
+            ],
         ];
     }
 
@@ -51,6 +55,9 @@ class SignUpRequest extends AuthRequest
                 'required'  => 'The field is required',
                 'string'    => 'Invalid data type',
                 'min'       => 'The field min size is 8',
+            ],
+            'join_token' => [
+                'string'    => 'Invalid data type',
             ],
         ];
     }

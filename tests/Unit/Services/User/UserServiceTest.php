@@ -121,4 +121,53 @@ class UserServiceTest extends TestCase
         $this->assertArrayNotHasKey('joinRequest', $data);
         $this->assertArrayNotHasKey('password', $data);
     }
+
+    public function test_positive_get_current_returns_active_link_token(): void
+    {
+        $service        = $this->app->make(UserService::class);
+
+        $group          = FamilyGroup::factory()->create();
+        $user           = User::factory()->create(['group_id' => $group->id]);
+        $inactiveLink   = FamilyGroupLink::factory()->create(['group_id' => $group->id, 'is_active' => false]);
+        $activeLink     = FamilyGroupLink::factory()->create(['group_id' => $group->id, 'is_active' => true]);
+
+        Auth::login($user);
+
+        $result = $service->getCurrent();
+
+        $this->assertEquals($activeLink->token, $result->link_token);
+        $this->assertNotEquals($inactiveLink->token, $result->link_token);
+        $this->assertArrayHasKey('link_token', $result->toArray());
+    }
+
+    public function test_positive_get_current_link_token_is_null_without_active_link(): void
+    {
+        $service        = $this->app->make(UserService::class);
+
+        $group          = FamilyGroup::factory()->create();
+        $user           = User::factory()->create(['group_id' => $group->id]);
+
+        FamilyGroupLink::factory()->create(['group_id' => $group->id, 'is_active' => false]);
+
+        Auth::login($user);
+
+        $result = $service->getCurrent();
+
+        $this->assertNull($result->link_token);
+    }
+
+    public function test_positive_get_current_ignores_foreign_group_link_token(): void
+    {
+        $service        = $this->app->make(UserService::class);
+
+        $user           = User::factory()->create(['group_id' => null]);
+
+        FamilyGroupLink::factory()->create(['is_active' => true]);
+
+        Auth::login($user);
+
+        $result = $service->getCurrent();
+
+        $this->assertNull($result->link_token);
+    }
 }
