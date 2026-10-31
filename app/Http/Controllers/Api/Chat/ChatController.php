@@ -10,12 +10,12 @@ use App\Http\Requests\Api\{
 use App\Services\{
     Chat\ChatService,
 };
+use App\Swagger\Api\Chat\ChatController as Swagger;
 use Illuminate\{
     Http\JsonResponse,
     Http\Response,
     Support\Facades\DB,
 };
-use OpenApi\Attributes as OA;
 
 class ChatController extends Controller
 {
@@ -25,31 +25,7 @@ class ChatController extends Controller
     {
     }
 
-    #[OA\Get(
-        path: '/api/chat',
-        operationId: 'chatList',
-        summary: 'Получить чаты пользователя с последним сообщением',
-        tags: ['Chat'],
-        security: [['bearerAuth' => []]],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Chats list',
-                content: new OA\JsonContent(
-                    type: 'object',
-                    properties: [
-                        new OA\Property(property: 'status', type: 'boolean', example: true),
-                        new OA\Property(
-                            property: 'data',
-                            type: 'array',
-                            items: new OA\Items(ref: '#/components/schemas/ChatWithLastDiscussionAndMembers')
-                        ),
-                    ]
-                )
-            ),
-            new OA\Response(response: 401, description: 'Unauthorized'),
-        ]
-    )]
+    #[Swagger\Index]
     public function index(): JsonResponse
     {
         try {
@@ -66,42 +42,7 @@ class ChatController extends Controller
         }
     }
 
-    #[OA\Get(
-        path: '/api/chat/search',
-        operationId: 'chatSearch',
-        summary: 'Поиск чатов по тексту сообщений',
-        tags: ['Chat'],
-        security: [['bearerAuth' => []]],
-        parameters: [
-            new OA\Parameter(
-                name: 'text',
-                in: 'query',
-                required: true,
-                description: 'Текст для поиска в сообщениях',
-                schema: new OA\Schema(type: 'string'),
-                example: 'привет'
-            ),
-        ],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Chats found',
-                content: new OA\JsonContent(
-                    type: 'object',
-                    properties: [
-                        new OA\Property(property: 'status', type: 'boolean', example: true),
-                        new OA\Property(
-                            property: 'data',
-                            type: 'array',
-                            items: new OA\Items(ref: '#/components/schemas/ChatWithLastDiscussionAndMembers')
-                        ),
-                    ]
-                )
-            ),
-            new OA\Response(response: 401, description: 'Unauthorized'),
-            new OA\Response(response: 422, description: 'Validation error'),
-        ]
-    )]
+    #[Swagger\Search]
     public function search(ChatSearchRequest $request): JsonResponse
     {
         $text = strval($request->input('text'));
@@ -120,60 +61,7 @@ class ChatController extends Controller
         }
     }
 
-    #[OA\Post(
-        path: '/api/chat',
-        operationId: 'chatStore',
-        summary: 'Создать чат или получить ранее созданный чат',
-        tags: ['Chat'],
-        security: [['bearerAuth' => []]],
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                required: ['user_to_id'],
-                properties: [
-                    new OA\Property(
-                        property: 'user_to_id',
-                        type: 'integer',
-                        example: 1,
-                        description: 'Id пользователя с кем создаётся чат'
-                    ),
-                ]
-            )
-        ),
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Chat created successfully',
-                content: new OA\JsonContent(
-                    type: 'object',
-                    properties: [
-                        new OA\Property(
-                            property: 'status',
-                            type: 'boolean',
-                            example: true
-                        ),
-                        new OA\Property(
-                            property: 'data',
-                            type: 'object',
-                            ref: '#/components/schemas/ChatWithDiscussionsAndMembers'
-                        ),
-                    ]
-                )
-            ),
-            new OA\Response(
-                response: 401,
-                description: 'Unauthorized'
-            ),
-            new OA\Response(
-                response: 403,
-                description: 'Попытка создать чат с самим собой',
-            ),
-            new OA\Response(
-                response: 422,
-                description: 'Validation error'
-            ),
-        ]
-    )]
+    #[Swagger\Store]
     public function store(ChatStoreRequest $request): JsonResponse
     {
         $userToId = intval($request->input('user_to_id'));
@@ -195,54 +83,7 @@ class ChatController extends Controller
         }
     }
 
-    #[OA\Get(
-        path: '/api/chat/{chat_id}',
-        operationId: 'chatShow',
-        summary: 'Получить чат',
-        tags: ['Chat'],
-        security: [['bearerAuth' => []]],
-        parameters: [
-            new OA\Parameter(
-                name: 'chat_id',
-                in: 'path',
-                required: true,
-                description: 'ID чата',
-                schema: new OA\Schema(
-                    type: 'integer'
-                ),
-                example: 5
-            ),
-        ],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Chat created successfully',
-                content: new OA\JsonContent(
-                    type: 'object',
-                    properties: [
-                        new OA\Property(
-                            property: 'status',
-                            type: 'boolean',
-                            example: true
-                        ),
-                        new OA\Property(
-                            property: 'data',
-                            type: 'object',
-                            ref: '#/components/schemas/ChatWithDiscussionsAndMembers'
-                        ),
-                    ]
-                )
-            ),
-            new OA\Response(
-                response: 401,
-                description: 'Unauthorized'
-            ),
-            new OA\Response(
-                response: 403,
-                description: 'This user is not member of this chat',
-            ),
-        ]
-    )]
+    #[Swagger\Show]
     public function show(int $chatId): JsonResponse
     {
         try {

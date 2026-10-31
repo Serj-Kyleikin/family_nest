@@ -10,11 +10,11 @@ use App\Http\Requests\Api\Expenses\Expenses\{
 use App\Services\{
     Expenses\ExpenseService,
 };
+use App\Swagger\Api\Expenses\ExpenseController as Swagger;
 use Illuminate\{
     Http\JsonResponse,
     Http\Response,
 };
-use OpenApi\Attributes as OA;
 
 class ExpenseController extends Controller
 {
@@ -23,41 +23,7 @@ class ExpenseController extends Controller
     ) {
     }
 
-    #[OA\Get(
-        path: '/api/expenses',
-        operationId: 'expenseList',
-        summary: 'Список расходов',
-        tags: ['Expenses'],
-        security: [['bearerAuth' => []]],
-        parameters: [
-            new OA\Parameter(
-                name: 'group_id',
-                in: 'query',
-                required: false,
-                schema: new OA\Schema(type: 'integer'),
-                example: 1
-            ),
-        ],
-        responses: [
-            // new OA\Response(
-            //     response: 200,
-            //     description: 'Expenses list',
-            //     content: new OA\JsonContent(
-            //         properties: [
-            //             new OA\Property(property: 'status', type: 'boolean', example: true),
-            //             new OA\Property(
-            //                 property: 'data',
-            //                 type: 'array',
-            //                 items: new OA\Items(
-            //                     ref: '#/components/schemas/ExpensesList'
-            //                 )
-            //             ),
-            //         ]
-            //     )
-            // ),
-            new OA\Response(response: 401, description: 'Unauthorized'),
-        ]
-    )]
+    #[Swagger\Index]
     public function index(): JsonResponse
     {
         $groupId = request()->query('group_id')
@@ -77,40 +43,7 @@ class ExpenseController extends Controller
         }
     }
 
-    #[OA\Post(
-        path: '/api/expenses',
-        operationId: 'expenseStore',
-        summary: 'Создать расход (template_id+amount | name+amount)',
-        tags: ['Expenses'],
-        security: [['bearerAuth' => []]],
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                required: ['amount'],
-                properties: [
-                    new OA\Property(property: 'template_id', type: 'integer', example: 10, nullable: true),
-                    new OA\Property(property: 'group_id', type: 'integer', example: 1, nullable: true),
-                    new OA\Property(property: 'name', type: 'string', example: 'Проезд', nullable: true),
-                    new OA\Property(property: 'amount', type: 'string', example: '120'),
-                ]
-            )
-        ),
-        responses: [
-            new OA\Response(
-                response: 201,
-                description: 'Created',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'status', type: 'boolean', example: true),
-                        new OA\Property(property: 'message', type: 'string', example: 'Expense has been created'),
-                    ]
-                )
-            ),
-            new OA\Response(response: 401, description: 'Unauthorized'),
-            new OA\Response(response: 404, description: 'Template not found'),
-            new OA\Response(response: 422, description: 'Validation error'),
-        ]
-    )]
+    #[Swagger\Store]
     public function store(ExpenseStoreRequest $request): JsonResponse
     {
         $groupId    = $request->input('group_id') !== null ? intval($request->input('group_id')) : null;
@@ -131,49 +64,7 @@ class ExpenseController extends Controller
         }
     }
 
-    #[OA\Put(
-        path: '/api/expenses/{id}',
-        operationId: 'expenseUpdate',
-        summary: 'Обновить расход',
-        tags: ['Expenses'],
-        security: [['bearerAuth' => []]],
-        parameters: [
-            new OA\Parameter(
-                name: 'id',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'integer'),
-                example: 1
-            ),
-        ],
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                required: ['amount'],
-                properties: [
-                    new OA\Property(property: 'template_id', type: 'integer', example: 10, nullable: true),
-                    new OA\Property(property: 'group_id', type: 'integer', example: 1, nullable: true),
-                    new OA\Property(property: 'name', type: 'string', example: 'Проезд', nullable: true),
-                    new OA\Property(property: 'amount', type: 'string', example: '120'),
-                ]
-            )
-        ),
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Updated',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'status', type: 'boolean', example: true),
-                        new OA\Property(property: 'message', type: 'string', example: 'Expense has been updated'),
-                    ]
-                )
-            ),
-            new OA\Response(response: 401, description: 'Unauthorized'),
-            new OA\Response(response: 404, description: 'Not found'),
-            new OA\Response(response: 422, description: 'Validation error'),
-        ]
-    )]
+    #[Swagger\Update]
     public function update(int $id, ExpenseUpdateRequest $request): JsonResponse
     {
         $groupId    = $request->input('group_id') !== null ? intval($request->input('group_id')) : null;
@@ -194,36 +85,7 @@ class ExpenseController extends Controller
         }
     }
 
-    #[OA\Delete(
-        path: '/api/expenses/{id}',
-        operationId: 'expenseDestroy',
-        summary: 'Удалить расход',
-        tags: ['Expenses'],
-        security: [['bearerAuth' => []]],
-        parameters: [
-            new OA\Parameter(
-                name: 'id',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'integer'),
-                example: 1
-            ),
-        ],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Updated',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'status', type: 'boolean', example: true),
-                        new OA\Property(property: 'message', type: 'string', example: 'Expense has been deleted'),
-                    ]
-                )
-            ),
-            new OA\Response(response: 401, description: 'Unauthorized'),
-            new OA\Response(response: 404, description: 'Not found'),
-        ]
-    )]
+    #[Swagger\Destroy]
     public function destroy(int $id): JsonResponse
     {
         try {

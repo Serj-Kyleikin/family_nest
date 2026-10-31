@@ -199,10 +199,11 @@
                     "Chat"
                 ],
                 "summary": "Получить чаты пользователя с последним сообщением",
+                "description": "Возвращает чаты текущего пользователя с последним сообщением и участниками.",
                 "operationId": "chatList",
                 "responses": {
                     "200": {
-                        "description": "Chats list",
+                        "description": "Чаты успешно получены",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -224,7 +225,7 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     }
                 },
                 "security": [
@@ -238,6 +239,7 @@
                     "Chat"
                 ],
                 "summary": "Создать чат или получить ранее созданный чат",
+                "description": "Создаёт чат текущего пользователя с выбранным пользователем или возвращает ранее созданный чат.",
                 "operationId": "chatStore",
                 "requestBody": {
                     "required": true,
@@ -261,7 +263,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Chat created successfully",
+                        "description": "Чат успешно создан",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -280,13 +282,13 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     },
                     "403": {
                         "description": "Попытка создать чат с самим собой"
                     },
                     "422": {
-                        "description": "Validation error"
+                        "description": "Ошибка валидации"
                     }
                 },
                 "security": [
@@ -302,6 +304,7 @@
                     "Chat"
                 ],
                 "summary": "Поиск чатов по тексту сообщений",
+                "description": "Возвращает чаты текущего пользователя, в сообщениях которых найден переданный текст.",
                 "operationId": "chatSearch",
                 "parameters": [
                     {
@@ -317,7 +320,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Chats found",
+                        "description": "Чаты успешно найдены",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -339,10 +342,10 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     },
                     "422": {
-                        "description": "Validation error"
+                        "description": "Ошибка валидации"
                     }
                 },
                 "security": [
@@ -358,6 +361,7 @@
                     "Chat"
                 ],
                 "summary": "Получить чат",
+                "description": "Возвращает чат с сообщениями и участниками, если текущий пользователь является его участником.",
                 "operationId": "chatShow",
                 "parameters": [
                     {
@@ -373,7 +377,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Chat created successfully",
+                        "description": "Чат успешно получен",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -392,10 +396,10 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     },
                     "403": {
-                        "description": "This user is not member of this chat"
+                        "description": "Пользователь не является участником чата"
                     }
                 },
                 "security": [
@@ -411,6 +415,7 @@
                     "Chat"
                 ],
                 "summary": "Создать сообщение в чате",
+                "description": "Создаёт сообщение в чате от имени текущего пользователя.",
                 "operationId": "chatDiscussionStore",
                 "parameters": [
                     {
@@ -442,7 +447,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Message created successfully",
+                        "description": "Сообщение успешно создано",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -462,13 +467,13 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     },
                     "403": {
-                        "description": "User is not a member of this chat"
+                        "description": "Пользователь не является участником чата"
                     },
                     "422": {
-                        "description": "Validation error"
+                        "description": "Ошибка валидации"
                     }
                 },
                 "security": [
@@ -484,6 +489,7 @@
                     "Chat"
                 ],
                 "summary": "Обновить сообщение в чате",
+                "description": "Изменяет текст сообщения в чате.",
                 "operationId": "chatDiscussionUpdate",
                 "parameters": [
                     {
@@ -525,7 +531,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Chat message updated successfully",
+                        "description": "Сообщение успешно обновлено",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -545,16 +551,16 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     },
                     "403": {
-                        "description": "User is not a member of this chat"
+                        "description": "Пользователь не является участником чата"
                     },
                     "404": {
-                        "description": "Discussion not found"
+                        "description": "Сообщение не найдено"
                     },
                     "422": {
-                        "description": "Validation error"
+                        "description": "Ошибка валидации"
                     }
                 },
                 "security": [
@@ -568,6 +574,7 @@
                     "Chat"
                 ],
                 "summary": "Удалить сообщение в чате",
+                "description": "Удаляет сообщение в чате.",
                 "operationId": "chatDiscussionDelete",
                 "parameters": [
                     {
@@ -593,7 +600,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Chat message deleted successfully",
+                        "description": "Сообщение успешно удалено",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -604,7 +611,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Message deleted successfully."
+                                            "example": "Chat message has been deleted"
                                         }
                                     },
                                     "type": "object"
@@ -613,13 +620,13 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     },
                     "403": {
-                        "description": "User is not a member of this chat"
+                        "description": "Пользователь не является участником чата"
                     },
                     "404": {
-                        "description": "Discussion not found"
+                        "description": "Сообщение не найдено"
                     }
                 },
                 "security": [
@@ -635,6 +642,7 @@
                     "Chat"
                 ],
                 "summary": "Поиск сообщений в чате",
+                "description": "Возвращает сообщения чата, в которых найден переданный текст или имя автора.",
                 "operationId": "chatDiscussionSearch",
                 "parameters": [
                     {
@@ -660,7 +668,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Search results",
+                        "description": "Сообщения успешно найдены",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -682,13 +690,13 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     },
                     "403": {
-                        "description": "User is not a member of this chat"
+                        "description": "Пользователь не является участником чата"
                     },
                     "422": {
-                        "description": "Validation error"
+                        "description": "Ошибка валидации"
                     }
                 },
                 "security": [
@@ -704,6 +712,7 @@
                     "Chat"
                 ],
                 "summary": "Изменение статуса сообщений в чате на прочитано",
+                "description": "Помечает переданные сообщения чата как прочитанные.",
                 "operationId": "chatDiscussionMarkAsRead",
                 "parameters": [
                     {
@@ -742,7 +751,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Discussions marked as read",
+                        "description": "Статус сообщений успешно изменён",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -762,16 +771,16 @@
                         }
                     },
                     "400": {
-                        "description": "Can not update is_read status for this messages"
+                        "description": "Нельзя изменить статус этих сообщений"
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     },
                     "403": {
-                        "description": "User is not a member of this chat"
+                        "description": "Пользователь не является участником чата"
                     },
                     "422": {
-                        "description": "Validation error"
+                        "description": "Ошибка валидации"
                     }
                 },
                 "security": [
@@ -787,11 +796,13 @@
                     "Expenses"
                 ],
                 "summary": "Список расходов",
+                "description": "Возвращает список расходов текущего пользователя, при необходимости только по выбранной группе шаблонов.",
                 "operationId": "expenseList",
                 "parameters": [
                     {
                         "name": "group_id",
                         "in": "query",
+                        "description": "ID группы шаблонов расходов",
                         "required": false,
                         "schema": {
                             "type": "integer"
@@ -801,7 +812,7 @@
                 ],
                 "responses": {
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     }
                 },
                 "security": [
@@ -815,6 +826,7 @@
                     "Expenses"
                 ],
                 "summary": "Создать расход (template_id+amount | name+amount)",
+                "description": "Создаёт расход текущего пользователя по шаблону (template_id) или по названию (name).",
                 "operationId": "expenseStore",
                 "requestBody": {
                     "required": true,
@@ -852,7 +864,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Created",
+                        "description": "Расход успешно создан",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -872,13 +884,13 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     },
                     "404": {
-                        "description": "Template not found"
+                        "description": "Шаблон не найден"
                     },
                     "422": {
-                        "description": "Validation error"
+                        "description": "Ошибка валидации"
                     }
                 },
                 "security": [
@@ -894,11 +906,13 @@
                     "Expenses"
                 ],
                 "summary": "Обновить расход",
+                "description": "Изменяет расход текущего пользователя.",
                 "operationId": "expenseUpdate",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID расхода",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -942,7 +956,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Updated",
+                        "description": "Расход успешно обновлён",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -962,13 +976,13 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     },
                     "404": {
-                        "description": "Not found"
+                        "description": "Расход не найден"
                     },
                     "422": {
-                        "description": "Validation error"
+                        "description": "Ошибка валидации"
                     }
                 },
                 "security": [
@@ -982,11 +996,13 @@
                     "Expenses"
                 ],
                 "summary": "Удалить расход",
+                "description": "Удаляет расход текущего пользователя.",
                 "operationId": "expenseDestroy",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID расхода",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -996,7 +1012,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Updated",
+                        "description": "Расход успешно удалён",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1016,10 +1032,10 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     },
                     "404": {
-                        "description": "Not found"
+                        "description": "Расход не найден"
                     }
                 },
                 "security": [
@@ -1035,6 +1051,7 @@
                     "Expenses"
                 ],
                 "summary": "Создать шаблон расхода",
+                "description": "Создаёт шаблон расхода в группе шаблонов текущего пользователя.",
                 "operationId": "expenseTemplateStore",
                 "requestBody": {
                     "required": true,
@@ -1066,7 +1083,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Created",
+                        "description": "Шаблон успешно создан",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1085,11 +1102,11 @@
                             }
                         }
                     },
-                    "422": {
-                        "description": "Validation error"
-                    },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
                     }
                 },
                 "security": [
@@ -1105,11 +1122,13 @@
                     "Expenses"
                 ],
                 "summary": "Получить шаблон расхода",
+                "description": "Возвращает шаблон расхода текущего пользователя.",
                 "operationId": "expenseTemplateShow",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID шаблона расхода",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -1119,10 +1138,10 @@
                 ],
                 "responses": {
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     },
                     "404": {
-                        "description": "Not found"
+                        "description": "Шаблон не найден"
                     }
                 },
                 "security": [
@@ -1136,11 +1155,13 @@
                     "Expenses"
                 ],
                 "summary": "Обновить шаблон расхода",
+                "description": "Изменяет шаблон расхода текущего пользователя.",
                 "operationId": "expenseTemplateUpdate",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID шаблона расхода",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -1179,7 +1200,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Updated",
+                        "description": "Шаблон успешно обновлён",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1199,13 +1220,13 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     },
                     "404": {
-                        "description": "Not found"
+                        "description": "Шаблон не найден"
                     },
                     "422": {
-                        "description": "Validation error"
+                        "description": "Ошибка валидации"
                     }
                 },
                 "security": [
@@ -1219,11 +1240,13 @@
                     "Expenses"
                 ],
                 "summary": "Удалить шаблон расхода",
+                "description": "Удаляет шаблон расхода текущего пользователя.",
                 "operationId": "expenseTemplateDestroy",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID шаблона расхода",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -1233,7 +1256,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Updated",
+                        "description": "Шаблон успешно удалён",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1253,10 +1276,10 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     },
                     "404": {
-                        "description": "Not found"
+                        "description": "Шаблон не найден"
                     }
                 },
                 "security": [
@@ -1272,10 +1295,11 @@
                     "Expenses"
                 ],
                 "summary": "Список групп шаблонов расходов (с шаблонами)",
+                "description": "Возвращает группы шаблонов расходов текущего пользователя вместе с их шаблонами.",
                 "operationId": "expenseTemplateGroupList",
                 "responses": {
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     }
                 },
                 "security": [
@@ -1289,6 +1313,7 @@
                     "Expenses"
                 ],
                 "summary": "Создать группу шаблонов расходов",
+                "description": "Создаёт группу шаблонов расходов текущего пользователя.",
                 "operationId": "expenseTemplateGroupStore",
                 "requestBody": {
                     "required": true,
@@ -1311,7 +1336,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Created",
+                        "description": "Группа успешно создана",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1331,10 +1356,10 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     },
                     "422": {
-                        "description": "Validation error"
+                        "description": "Ошибка валидации"
                     }
                 },
                 "security": [
@@ -1350,11 +1375,13 @@
                     "Expenses"
                 ],
                 "summary": "Получить группу шаблонов расходов",
+                "description": "Возвращает группу шаблонов расходов текущего пользователя.",
                 "operationId": "expenseTemplateGroupShow",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID группы шаблонов расходов",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -1364,10 +1391,10 @@
                 ],
                 "responses": {
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     },
                     "404": {
-                        "description": "Not found"
+                        "description": "Группа не найдена"
                     }
                 },
                 "security": [
@@ -1381,11 +1408,13 @@
                     "Expenses"
                 ],
                 "summary": "Обновить группу шаблонов расходов",
+                "description": "Изменяет название группы шаблонов расходов текущего пользователя.",
                 "operationId": "expenseTemplateGroupUpdate",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID группы шаблонов расходов",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -1414,7 +1443,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Created",
+                        "description": "Группа успешно обновлена",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1434,13 +1463,13 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     },
                     "404": {
-                        "description": "Not found"
+                        "description": "Группа не найдена"
                     },
                     "422": {
-                        "description": "Validation error"
+                        "description": "Ошибка валидации"
                     }
                 },
                 "security": [
@@ -1454,11 +1483,13 @@
                     "Expenses"
                 ],
                 "summary": "Удалить группу шаблонов расходов",
+                "description": "Удаляет группу шаблонов расходов текущего пользователя.",
                 "operationId": "expenseTemplateGroupDestroy",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "ID группы шаблонов расходов",
                         "required": true,
                         "schema": {
                             "type": "integer"
@@ -1468,7 +1499,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Created",
+                        "description": "Группа успешно удалена",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1488,10 +1519,10 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthorized"
+                        "description": "Пользователь не авторизован"
                     },
                     "404": {
-                        "description": "Not found"
+                        "description": "Группа не найдена"
                     }
                 },
                 "security": [
