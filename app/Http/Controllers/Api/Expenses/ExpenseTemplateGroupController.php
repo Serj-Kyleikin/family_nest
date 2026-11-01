@@ -28,6 +28,22 @@ class ExpenseTemplateGroupController extends Controller
     public function index(): JsonResponse
     {
         try {
+            $groups = $this->expenseTemplateGroupService->list();
+
+            return response()->json([
+                'status'    => true,
+                'data'      => $groups,
+            ], Response::HTTP_OK);
+
+        } catch (\Exception $exception) {
+            return $this->error($exception);
+        }
+    }
+
+    #[Swagger\IndexWithTemplates]
+    public function indexWithTemplates(): JsonResponse
+    {
+        try {
             $groups = $this->expenseTemplateGroupService->listWithTemplates();
 
             return response()->json([
@@ -50,7 +66,7 @@ class ExpenseTemplateGroupController extends Controller
 
             return response()->json([
                 'status'    => true,
-                'message'   => 'Template group has been created',
+                'message'   => 'Категория создана',
             ], Response::HTTP_CREATED);
 
         } catch (\Exception $exception) {
@@ -84,7 +100,7 @@ class ExpenseTemplateGroupController extends Controller
 
             return response()->json([
                 'status'    => true,
-                'message'   => 'Template group has been updated',
+                'message'   => 'Категория обновлена',
             ], Response::HTTP_OK);
 
         } catch (\Exception $exception) {
@@ -100,7 +116,7 @@ class ExpenseTemplateGroupController extends Controller
 
             return response()->json([
                 'status'    => true,
-                'message'   => 'Template group has been deleted',
+                'message'   => 'Категория удалена',
             ], Response::HTTP_OK);
 
         } catch (\Exception $exception) {

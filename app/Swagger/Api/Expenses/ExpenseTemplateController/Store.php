@@ -23,12 +23,12 @@ class Store extends OA\Post
             requestBody: new OA\RequestBody(
                 required:   true,
                 content:    new OA\JsonContent(
-                                required:   ['group_id', 'name'],
+                                required:   ['template_group_id', 'name'],
                                 properties: [
-                                                new OA\Property(property: 'group_id',  type: 'integer', example: 1),
-                                                new OA\Property(property: 'name',      type: 'string',  example: 'Молоко'),
-                                                new OA\Property(property: 'price',     type: 'string',  example: '89.90', nullable: true),
-                                                new OA\Property(property: 'is_active', type: 'boolean', example: true),
+                                                new OA\Property(property: 'template_group_id', type: 'integer', example: 1),
+                                                new OA\Property(property: 'name',              type: 'string',  example: 'Молоко'),
+                                                new OA\Property(property: 'price',             type: 'string',  example: '89.90', nullable: true),
+                                                new OA\Property(property: 'is_active',         type: 'boolean', example: true),
                                             ]
                             )
             ),
@@ -41,7 +41,7 @@ class Store extends OA\Post
                     content:      new OA\JsonContent(
                                       properties: [
                                                       new OA\Property(property: 'status',  type: 'boolean', example: true),
-                                                      new OA\Property(property: 'message', type: 'string',  example: 'Expense template has been created'),
+                                                      new OA\Property(property: 'message', type: 'string',  example: 'Шаблон создан'),
                                                   ]
                                   )
                 ),

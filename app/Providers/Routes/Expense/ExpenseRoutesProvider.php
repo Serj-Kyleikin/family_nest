@@ -18,23 +18,38 @@ class ExpenseRoutesProvider
             Route::group(['prefix' => 'template'], function () {
 
                 Route::group(['prefix' => 'groups'], function () {
+
                     Route::get('', [ExpenseTemplateGroupController::class, 'index']);
+                    Route::get('with-templates', [ExpenseTemplateGroupController::class, 'indexWithTemplates']);
                     Route::post('', [ExpenseTemplateGroupController::class, 'store']);
-                    Route::get('{id}', [ExpenseTemplateGroupController::class, 'show']);
-                    Route::put('{id}', [ExpenseTemplateGroupController::class, 'update']);
-                    Route::delete('{id}', [ExpenseTemplateGroupController::class, 'destroy']);
+
+                    Route::group(['prefix' => '{id}', 'where' => ['id' => '[0-9]+']], function () {
+
+                        Route::get('', [ExpenseTemplateGroupController::class, 'show']);
+                        Route::put('', [ExpenseTemplateGroupController::class, 'update']);
+                        Route::delete('', [ExpenseTemplateGroupController::class, 'destroy']);
+
+                        Route::get('templates', [ExpenseTemplateController::class, 'index']);
+                    });
                 });
 
                 Route::post('', [ExpenseTemplateController::class, 'store']);
-                Route::get('{id}', [ExpenseTemplateController::class, 'show']);
-                Route::put('{id}', [ExpenseTemplateController::class, 'update']);
-                Route::delete('{id}', [ExpenseTemplateController::class, 'destroy']);
+
+                Route::group(['prefix' => '{id}', 'where' => ['id' => '[0-9]+']], function () {
+
+                    Route::get('', [ExpenseTemplateController::class, 'show']);
+                    Route::put('', [ExpenseTemplateController::class, 'update']);
+                    Route::delete('', [ExpenseTemplateController::class, 'destroy']);
+                });
             });
 
             Route::get('', [ExpenseController::class, 'index']);
             Route::post('', [ExpenseController::class, 'store']);
-            Route::put('{id}', [ExpenseController::class, 'update']);
-            Route::delete('{id}', [ExpenseController::class, 'destroy']);
+
+            Route::group(['prefix' => '{id}', 'where' => ['id' => '[0-9]+']], function () {
+                Route::put('', [ExpenseController::class, 'update']);
+                Route::delete('', [ExpenseController::class, 'destroy']);
+            });
         });
     }
 }

@@ -13,10 +13,11 @@ class Expense extends Model
 
     protected $fillable = [
         'user_id',
-        'group_id',
+        'template_group_id',
         'template_id',
         'name',
         'amount',
+        'created_at',
     ];
 
     public function template(): BelongsTo
@@ -26,6 +27,6 @@ class Expense extends Model
 
     public function templateGroup(): BelongsTo
     {
-        return $this->belongsTo(ExpenseTemplateGroup::class, 'group_id');
+        return $this->belongsTo(ExpenseTemplateGroup::class, 'template_group_id');
     }
 }

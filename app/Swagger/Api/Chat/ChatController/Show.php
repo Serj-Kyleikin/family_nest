@@ -16,7 +16,7 @@ class Show extends OA\Get
             tags:             ['Chat'],
 
             summary:      'Получить чат',
-            description:  'Возвращает чат с сообщениями и участниками, если текущий пользователь является его участником.',
+            description:  'Возвращает чат с участниками и 20 сообщениями, если текущий пользователь является его участником. Без before_id приходят последние 20 сообщений, с before_id — 20 сообщений, предшествующих указанному. Сообщения упорядочены от старых к новым.',
 
             security:         [['bearerAuth' => []]],
 
@@ -28,6 +28,14 @@ class Show extends OA\Get
                     description:  'ID чата',
                     schema:       new OA\Schema(type: 'integer'),
                     example:      5
+                ),
+                new OA\Parameter(
+                    name:         'before_id',
+                    in:           'query',
+                    required:     false,
+                    description:  'ID сообщения, до которого нужно загрузить более старые сообщения',
+                    schema:       new OA\Schema(type: 'integer', minimum: 1),
+                    example:      120
                 ),
             ],
 
@@ -47,6 +55,7 @@ class Show extends OA\Get
 
                 new OA\Response(response: 401, description: 'Пользователь не авторизован'),
                 new OA\Response(response: 403, description: 'Пользователь не является участником чата'),
+                new OA\Response(response: 422, description: 'Ошибка валидации'),
             ]
         );
     }

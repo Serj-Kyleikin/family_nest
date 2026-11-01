@@ -31,6 +31,12 @@ use OpenApi\Attributes as OA;
             type: 'array',
             items: new OA\Items(ref: '#/components/schemas/ChatDiscussion')
         ),
+        new OA\Property(
+            property: 'has_more',
+            type: 'boolean',
+            example: true,
+            description: 'Есть ли более старые сообщения, не вошедшие в ответ'
+        ),
     ]
 )]
 #[OA\Schema(

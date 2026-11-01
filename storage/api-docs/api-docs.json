@@ -918,23 +918,150 @@
                     "Expenses"
                 ],
                 "summary": "Список расходов",
-                "description": "Возвращает список расходов текущего пользователя, при необходимости только по выбранной группе шаблонов.",
+                "description": "Возвращает расходы текущего пользователя и тех участников его семейной группы, которые открыли ему доступ, от новых к старым. Страница задаётся параметрами limit и last_id: без last_id возвращается верх списка, с last_id только расходы старше записи с этим id.",
                 "operationId": "expenseList",
                 "parameters": [
                     {
-                        "name": "group_id",
+                        "name": "limit",
                         "in": "query",
-                        "description": "ID группы шаблонов расходов",
+                        "description": "Количество записей на странице, от 1 до 100",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 20
+                    },
+                    {
+                        "name": "last_id",
+                        "in": "query",
+                        "description": "ID последнего расхода предыдущей страницы",
                         "required": false,
                         "schema": {
                             "type": "integer"
                         },
-                        "example": 1
+                        "example": 100
+                    },
+                    {
+                        "name": "date_from",
+                        "in": "query",
+                        "description": "Начало периода: возвращаются только расходы, созданные в этот момент или позже. Дата и время, например 2026-11-01T00:00:00Z",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "example": "2026-11-01T00:00:00Z"
+                    },
+                    {
+                        "name": "date_to",
+                        "in": "query",
+                        "description": "Конец периода, не включительно: возвращаются только расходы, созданные раньше этого момента. Вместе с date_from задаёт окно, например сутки",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date-time"
+                        },
+                        "example": "2026-11-02T00:00:00Z"
+                    },
+                    {
+                        "name": "user_ids",
+                        "in": "query",
+                        "description": "ID владельцев расходов, чтобы показать только их",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        },
+                        "example": [
+                            1,
+                            5
+                        ]
+                    },
+                    {
+                        "name": "template_group_ids",
+                        "in": "query",
+                        "description": "ID групп шаблонов расходов, чтобы показать только расходы из них",
+                        "required": false,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        },
+                        "example": [
+                            1,
+                            7
+                        ]
                     }
                 ],
                 "responses": {
+                    "200": {
+                        "description": "Расходы успешно получены",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "user_id": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    },
+                                                    "user_name": {
+                                                        "type": "string",
+                                                        "example": "Иван Иванов"
+                                                    },
+                                                    "template_group_id": {
+                                                        "type": "integer",
+                                                        "example": 1,
+                                                        "nullable": true
+                                                    },
+                                                    "template_group_name": {
+                                                        "type": "string",
+                                                        "example": "Продукты",
+                                                        "nullable": true
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Проезд",
+                                                        "nullable": true
+                                                    },
+                                                    "amount": {
+                                                        "type": "string",
+                                                        "example": "120.00"
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "format": "date-time",
+                                                        "example": "2026-11-01T12:00:00.000000Z"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
                     "401": {
                         "description": "Пользователь не авторизован"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
                     }
                 },
                 "security": [
@@ -947,7 +1074,7 @@
                 "tags": [
                     "Expenses"
                 ],
-                "summary": "Создать расход (template_id+amount | name+amount)",
+                "summary": "Создать расход по шаблону или по названию",
                 "description": "Создаёт расход текущего пользователя по шаблону (template_id) или по названию (name).",
                 "operationId": "expenseStore",
                 "requestBody": {
@@ -964,7 +1091,7 @@
                                         "example": 10,
                                         "nullable": true
                                     },
-                                    "group_id": {
+                                    "template_group_id": {
                                         "type": "integer",
                                         "example": 1,
                                         "nullable": true
@@ -997,7 +1124,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Expense has been created"
+                                            "example": "Расход добавлен"
                                         }
                                     },
                                     "type": "object"
@@ -1056,7 +1183,7 @@
                                         "example": 10,
                                         "nullable": true
                                     },
-                                    "group_id": {
+                                    "template_group_id": {
                                         "type": "integer",
                                         "example": 1,
                                         "nullable": true
@@ -1089,7 +1216,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Expense has been updated"
+                                            "example": "Расход обновлен"
                                         }
                                     },
                                     "type": "object"
@@ -1145,7 +1272,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Expense has been deleted"
+                                            "example": "Расход удален"
                                         }
                                     },
                                     "type": "object"
@@ -1181,17 +1308,22 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "group_id",
+                                    "template_group_id",
                                     "name"
                                 ],
                                 "properties": {
-                                    "group_id": {
+                                    "template_group_id": {
                                         "type": "integer",
                                         "example": 1
                                     },
                                     "name": {
                                         "type": "string",
                                         "example": "Молоко"
+                                    },
+                                    "price": {
+                                        "type": "string",
+                                        "example": "89.90",
+                                        "nullable": true
                                     },
                                     "is_active": {
                                         "type": "boolean",
@@ -1216,7 +1348,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Expense template has been created"
+                                            "example": "Шаблон создан"
                                         }
                                     },
                                     "type": "object"
@@ -1297,18 +1429,23 @@
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "group_id",
+                                    "template_group_id",
                                     "name",
                                     "is_active"
                                 ],
                                 "properties": {
-                                    "group_id": {
+                                    "template_group_id": {
                                         "type": "integer",
                                         "example": 1
                                     },
                                     "name": {
                                         "type": "string",
                                         "example": "Молоко"
+                                    },
+                                    "price": {
+                                        "type": "string",
+                                        "example": "89.90",
+                                        "nullable": true
                                     },
                                     "is_active": {
                                         "type": "boolean",
@@ -1333,7 +1470,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Expense template has been updated"
+                                            "example": "Шаблон обновлён"
                                         }
                                     },
                                     "type": "object"
@@ -1389,7 +1526,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Expense template has been deleted"
+                                            "example": "Шаблон удален"
                                         }
                                     },
                                     "type": "object"
@@ -1417,7 +1554,7 @@
                     "Expenses"
                 ],
                 "summary": "Список групп шаблонов расходов (с шаблонами)",
-                "description": "Возвращает группы шаблонов расходов текущего пользователя вместе с их шаблонами.",
+                "description": "Возвращает группы шаблонов расходов текущего пользователя вместе с их шаблонами (у шаблона есть цена price, может быть null).",
                 "operationId": "expenseTemplateGroupList",
                 "responses": {
                     "401": {
@@ -1469,7 +1606,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Template group has been created"
+                                            "example": "Категория создана"
                                         }
                                     },
                                     "type": "object"
@@ -1576,7 +1713,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Template group has been updated"
+                                            "example": "Категория обновлена"
                                         }
                                     },
                                     "type": "object"
@@ -1632,7 +1769,7 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Template group has been deleted"
+                                            "example": "Категория удалена"
                                         }
                                     },
                                     "type": "object"
@@ -2300,6 +2437,158 @@
                 ]
             }
         },
+        "/api/settings/expenses": {
+            "get": {
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Получить настройки доступа к расходам",
+                "description": "Возвращает участников семейной группы текущего пользователя, кроме него самого, и признак, видит ли участник его расходы.",
+                "operationId": "settingsExpensesShow",
+                "responses": {
+                    "200": {
+                        "description": "Настройки успешно получены",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Иван Иванов"
+                                                    },
+                                                    "is_allowed": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован"
+                    },
+                    "404": {
+                        "description": "Группа не найдена"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Изменить настройки доступа к расходам",
+                "description": "Полностью заменяет список участников семейной группы, которые видят расходы текущего пользователя. Пустой список закрывает доступ всем.",
+                "operationId": "settingsExpensesUpdate",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user_ids"
+                                ],
+                                "properties": {
+                                    "user_ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            5,
+                                            7
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Настройки успешно сохранены",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "required": [
+                                        "status",
+                                        "message"
+                                    ],
+                                    "properties": {
+                                        "status": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 5
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Иван Иванов"
+                                                    },
+                                                    "is_allowed": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Настройки расходов успешно сохранены."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Пользователь не авторизован"
+                    },
+                    "404": {
+                        "description": "Группа или участник не найдены"
+                    },
+                    "422": {
+                        "description": "Ошибка валидации"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/user/current": {
             "get": {
                 "tags": [
@@ -2617,6 +2906,10 @@
         {
             "name": "Family",
             "description": "Family"
+        },
+        {
+            "name": "Settings",
+            "description": "Settings"
         },
         {
             "name": "User",

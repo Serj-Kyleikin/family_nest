@@ -15,8 +15,8 @@ class Store extends OA\Post
             operationId:      'expenseStore',
             tags:             ['Expenses'],
 
-            summary:      'Создать расход (template_id+amount | name+amount)',
-            description:  'Создаёт расход текущего пользователя по шаблону (template_id) или по названию (name).',
+            summary:      'Создать расход по шаблону или по названию',
+            description:  'Создаёт расход текущего пользователя по шаблону (template_id) или по названию (name). Необязательное поле date задаёт дату и время расхода вместо текущих.',
 
             security:         [['bearerAuth' => []]],
 
@@ -25,10 +25,11 @@ class Store extends OA\Post
                 content:    new OA\JsonContent(
                                 required:   ['amount'],
                                 properties: [
-                                                new OA\Property(property: 'template_id', type: 'integer', example: 10,       nullable: true),
-                                                new OA\Property(property: 'group_id',    type: 'integer', example: 1,        nullable: true),
-                                                new OA\Property(property: 'name',        type: 'string',  example: 'Проезд', nullable: true),
-                                                new OA\Property(property: 'amount',      type: 'string',  example: '120'),
+                                                new OA\Property(property: 'template_id',       type: 'integer', example: 10,                     nullable: true),
+                                                new OA\Property(property: 'template_group_id', type: 'integer', example: 1,                      nullable: true),
+                                                new OA\Property(property: 'name',              type: 'string',  example: 'Проезд',               nullable: true),
+                                                new OA\Property(property: 'amount',            type: 'string',  example: '120'),
+                                                new OA\Property(property: 'date',              type: 'string',  example: '2026-11-01T12:00:00Z', nullable: true, format: 'date-time'),
                                             ]
                             )
             ),
@@ -41,7 +42,7 @@ class Store extends OA\Post
                     content:      new OA\JsonContent(
                                       properties: [
                                                       new OA\Property(property: 'status',  type: 'boolean', example: true),
-                                                      new OA\Property(property: 'message', type: 'string',  example: 'Expense has been created'),
+                                                      new OA\Property(property: 'message', type: 'string',  example: 'Расход добавлен'),
                                                   ]
                                   )
                 ),

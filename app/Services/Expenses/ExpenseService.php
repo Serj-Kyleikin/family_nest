@@ -8,7 +8,9 @@ use App\Services\{
     Expenses\Util\ExpenseRulesUtil,
 };
 use App\Exceptions\HandledException;
+use App\SharedKernel\Checkers\DateChecker;
 use Illuminate\{
+    Support\Carbon,
     Support\Collection,
     Support\Facades\Auth,
 };
@@ -21,21 +23,37 @@ class ExpenseService
     ) {
     }
 
-    public function list(int|null $groupId = null): Collection
-    {
-        $userId = Auth::id();
+    public function list(
+        int             $limit,
+        int|null        $lastId = null,
+        array           $userIds = [],
+        array           $templateGroupIds = [],
+        Carbon|null     $dateFrom = null,
+        Carbon|null     $dateTo = null
+    ): Collection {
+        DateChecker::isFromNotAfterTo($dateFrom, $dateTo);
 
-        # ToDo: add by date
-        return $this->expenseRepository->getForUser($userId, $groupId);
+        $user = Auth::user();
+
+        return $this->expenseRepository->getForUser(
+            $user->id,
+            $user->group_id,
+            $userIds,
+            $templateGroupIds,
+            $lastId,
+            $limit,
+            $dateFrom?->copy()->setTimezone(config('app.timezone')),
+            $dateTo?->copy()->setTimezone(config('app.timezone'))
+        );
     }
 
-    public function create(int|null $templateId, string|null $name, string $amount, int|null $groupId = null): void 
+    public function create(int|null $templateId, string|null $name, string $amount, int|null $templateGroupId = null, Carbon|null $date = null): void 
     {
         $userId = Auth::id();
 
         if (is_int($templateId)) {
 
-            $template = $this->expenseTemplateRepository->firstForUser($templateId, $userId, true);
+            $template = $this->expenseTemplateRepository->firstForUser($templateId, $userId, Auth::user()->group_id, true);
             throw_unless(
                 $template, 
                 HandledException::class, 
@@ -43,37 +61,43 @@ class ExpenseService
                 404
             );
 
-            $name       = $template->name;
-            $groupId    = $groupId ? $groupId : $template->group_id;
+            $name               = $template->name;
+            $templateGroupId    = $templateGroupId ? $templateGroupId : $template->template_group_id;
         }
 
-        $this->expenseRepository->create([
-            'user_id'       => $userId,
-            'group_id'      => $groupId,
-            'template_id'   => $templateId,
-            'name'          => $name,
-            'amount'        => $amount,
-        ]);
+        $data = [
+            'user_id'           => $userId,
+            'template_group_id' => $templateGroupId,
+            'template_id'       => $templateId,
+            'name'              => $name,
+            'amount'            => $amount,
+        ];
+
+        if ($date) {
+            $data['created_at'] = $date->copy()->setTimezone(config('app.timezone'));
+        }
+
+        $this->expenseRepository->create($data);
     }
 
-    public function update(int $id, ?int $templateId, ?string $name, string $amount, ?int $groupId = null): void 
+    public function update(int $id, ?int $templateId, ?string $name, string $amount, ?int $templateGroupId = null, ?Carbon $date = null): void 
     {
         $userId = Auth::id();
-
         ExpenseRulesUtil::isExists($id, $userId);
 
-        if (is_int($templateId)) {
+        if(is_int($templateId)) {
 
-            $template = $this->expenseTemplateRepository->firstForUser($templateId, $userId, true);
-            throw_unless(
-                $template, 
-                HandledException::class, 
-                'Template not found', 
-                404
-            );
+            $template           = $this->expenseTemplateRepository
+                                       ->firstForUser($templateId, $userId, Auth::user()->group_id, true);
+                                throw_unless(
+                                    $template, 
+                                    HandledException::class, 
+                                    'Template not found', 
+                                    404
+                                );
 
-            $name       = $template->name;
-            $groupId    = $groupId ? $groupId : $template->group_id;
+            $name               = $template->name;
+            $templateGroupId    = $templateGroupId ? $templateGroupId : $template->template_group_id;
         }
 
         $data = [
@@ -82,11 +106,18 @@ class ExpenseService
             'amount'        => $amount,
         ];
 
-        if (filled($groupId)) {
-            $data['group_id'] = $groupId;
+        if(filled($templateGroupId)) {
+            $data['template_group_id'] = $templateGroupId;
         }
 
-        $this->expenseRepository->update(['id' => $id, 'user_id' => $userId], $data);
+        if ($date) {
+            $data['created_at'] = $date->copy()->setTimezone(config('app.timezone'));
+        }
+
+        $this->expenseRepository->update(
+            ['id' => $id, 'user_id' => $userId], 
+            $data
+        );
     }
 
     public function delete(int $id): void
@@ -94,6 +125,9 @@ class ExpenseService
         $userId = Auth::id();
 
         ExpenseRulesUtil::isExists($id, $userId);
-        $this->expenseRepository->delete(['id' => $id, 'user_id' => $userId]);
+        $this->expenseRepository->delete([
+            'id'        => $id,
+            'user_id'   => $userId
+        ]);
     }
 }

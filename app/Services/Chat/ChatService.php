@@ -43,11 +43,11 @@ class ChatService
         return $this->createChatHandler->handle($userToId);
     }
 
-    public function getChatWithDiscussionsAndMembers(int $chatId): Chat
+    public function getChatWithDiscussionsAndMembers(int $chatId, ?int $beforeId = null): Chat
     {
         $userId = Auth::id();
         ChatRulesUtil::isUserMemberOfThisChat($chatId, $userId);
 
-        return $this->chatRepository->getWithDiscussionsAndMembers($chatId);
+        return $this->chatRepository->getWithDiscussionsAndMembers($chatId, $beforeId);
     }
 }

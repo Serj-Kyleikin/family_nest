@@ -24,4 +24,30 @@ class ExpenseTemplateRulesUtil
             404
         );
     }
+
+    /**
+     * @throws \Throwable
+     */
+    public static function isSameGroup(ExpenseTemplate $template, int $templateGroupId): void
+    {
+        throw_unless(
+            (int) $template->template_group_id === $templateGroupId,
+            HandledException::class,
+            'Expense template group does not match',
+            422
+        );
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    public static function isNotNull(ExpenseTemplate|null $template): void
+    {
+        throw_unless(
+            $template, 
+            HandledException::class, 
+            'Expense template is not found', 
+            404
+        );
+    }
 }

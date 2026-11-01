@@ -16,7 +16,7 @@ class Update extends OA\Put
             tags:             ['Expenses'],
 
             summary:      'Обновить расход',
-            description:  'Изменяет расход текущего пользователя.',
+            description:  'Изменяет расход текущего пользователя. Необязательное поле date перезаписывает дату и время расхода, без него дата не меняется.',
 
             security:         [['bearerAuth' => []]],
 
@@ -36,10 +36,11 @@ class Update extends OA\Put
                 content:    new OA\JsonContent(
                                 required:   ['amount'],
                                 properties: [
-                                                new OA\Property(property: 'template_id', type: 'integer', example: 10,       nullable: true),
-                                                new OA\Property(property: 'group_id',    type: 'integer', example: 1,        nullable: true),
-                                                new OA\Property(property: 'name',        type: 'string',  example: 'Проезд', nullable: true),
-                                                new OA\Property(property: 'amount',      type: 'string',  example: '120'),
+                                                new OA\Property(property: 'template_id',       type: 'integer', example: 10,                     nullable: true),
+                                                new OA\Property(property: 'template_group_id', type: 'integer', example: 1,                      nullable: true),
+                                                new OA\Property(property: 'name',              type: 'string',  example: 'Проезд',               nullable: true),
+                                                new OA\Property(property: 'amount',            type: 'string',  example: '120'),
+                                                new OA\Property(property: 'date',              type: 'string',  example: '2026-11-01T12:00:00Z', nullable: true, format: 'date-time'),
                                             ]
                             )
             ),
@@ -52,7 +53,7 @@ class Update extends OA\Put
                     content:      new OA\JsonContent(
                                       properties: [
                                                       new OA\Property(property: 'status',  type: 'boolean', example: true),
-                                                      new OA\Property(property: 'message', type: 'string',  example: 'Expense has been updated'),
+                                                      new OA\Property(property: 'message', type: 'string',  example: 'Расход обновлен'),
                                                   ]
                                   )
                 ),

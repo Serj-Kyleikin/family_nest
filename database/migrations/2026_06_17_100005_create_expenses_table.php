@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('user_id');
 
-            $table->integer('group_id')
+            $table->integer('template_group_id')
                 ->nullable();
             $table->unsignedBigInteger('template_id')
                 ->nullable();
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->index(['user_id', 'created_at']);
-            $table->index(['user_id', 'group_id', 'created_at']);
+            $table->index(['user_id', 'template_group_id', 'created_at']);
         });
     }
 

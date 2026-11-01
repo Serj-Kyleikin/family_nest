@@ -39,7 +39,7 @@ class Destroy extends OA\Delete
                     content:      new OA\JsonContent(
                                       properties: [
                                                       new OA\Property(property: 'status',  type: 'boolean', example: true),
-                                                      new OA\Property(property: 'message', type: 'string',  example: 'Expense has been deleted'),
+                                                      new OA\Property(property: 'message', type: 'string',  example: 'Расход удален'),
                                                   ]
                                   )
                 ),

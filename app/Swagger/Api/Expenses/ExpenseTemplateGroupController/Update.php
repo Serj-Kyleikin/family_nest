@@ -49,7 +49,7 @@ class Update extends OA\Put
                     content:      new OA\JsonContent(
                                       properties: [
                                                       new OA\Property(property: 'status',  type: 'boolean', example: true),
-                                                      new OA\Property(property: 'message', type: 'string',  example: 'Template group has been updated'),
+                                                      new OA\Property(property: 'message', type: 'string',  example: 'Категория обновлена'),
                                                   ]
                                   )
                 ),

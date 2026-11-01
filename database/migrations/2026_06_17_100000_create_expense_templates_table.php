@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('expense_templates', function (Blueprint $table) {
 
             $table->id();
-            $table->integer('group_id');
+            $table->integer('template_group_id');
             $table->string('name');
+            $table->decimal('price', 12, 2)
+                ->nullable();
             $table->boolean('is_active');
         });
     }

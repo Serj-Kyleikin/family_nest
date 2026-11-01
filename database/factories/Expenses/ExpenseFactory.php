@@ -18,11 +18,11 @@ class ExpenseFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id'       => User::factory(),
-            'group_id'      => null,
-            'template_id'   => null,
-            'name'          => $this->faker->word(),
-            'amount'        => 100,
+            'user_id'           => User::factory(),
+            'template_group_id' => null,
+            'template_id'       => null,
+            'name'              => $this->faker->word(),
+            'amount'            => 100,
         ];
     }
 }

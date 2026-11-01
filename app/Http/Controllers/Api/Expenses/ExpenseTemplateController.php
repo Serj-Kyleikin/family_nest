@@ -26,18 +26,34 @@ class ExpenseTemplateController extends Controller
     #[Swagger\Store]
     public function store(TemplateStoreRequest $request): JsonResponse
     {
-        $groupId    = intval($request->input('group_id'));
-        $name       = strval($request->input('name'));
-        $price      = $request->filled('price') ? strval($request->input('price')) : null;
-        $isActive   = boolval($request->boolean('is_active', true));
+        $templateGroupId = intval($request->input('template_group_id'));
+        $name            = strval($request->input('name'));
+        $price           = $request->filled('price') ? strval($request->input('price')) : null;
+        $isActive        = boolval($request->boolean('is_active', true));
 
         try {
-            $this->expenseTemplateService->create($groupId, $name, $price, $isActive);
+            $this->expenseTemplateService->create($templateGroupId, $name, $price, $isActive);
 
             return response()->json([
                 'status'    => true,
-                'message'   => 'Expense template has been created',
+                'message'   => 'Шаблон создан',
             ], Response::HTTP_CREATED);
+
+        } catch (\Exception $exception) {
+            return $this->error($exception);
+        }
+    }
+
+    #[Swagger\Index]
+    public function index(int $id): JsonResponse
+    {
+        try {
+            $templates = $this->expenseTemplateService->list($id);
+
+            return response()->json([
+                'status'    => true,
+                'data'      => $templates,
+            ], Response::HTTP_OK);
 
         } catch (\Exception $exception) {
             return $this->error($exception);
@@ -48,7 +64,7 @@ class ExpenseTemplateController extends Controller
     public function show(int $id): JsonResponse
     {
         try {
-            $template = $this->expenseTemplateService->get($id);
+            $template = $this->expenseTemplateService->show($id);
 
             return response()->json([
                 'status'    => true,
@@ -63,17 +79,17 @@ class ExpenseTemplateController extends Controller
     #[Swagger\Update]
     public function update(int $id, TemplateUpdateRequest $request): JsonResponse
     {
-        $groupId    = intval($request->input('group_id'));
-        $name       = strval($request->input('name'));
-        $price      = $request->filled('price') ? strval($request->input('price')) : null;
-        $isActive   = boolval($request->boolean('is_active', true));
+        $templateGroupId = intval($request->input('template_group_id'));
+        $name            = strval($request->input('name'));
+        $price           = $request->filled('price') ? strval($request->input('price')) : null;
+        $isActive        = boolval($request->boolean('is_active', true));
 
         try {
-            $this->expenseTemplateService->update($id, $groupId, $name, $price, $isActive);
+            $this->expenseTemplateService->update($id, $templateGroupId, $name, $price, $isActive);
 
             return response()->json([
                 'status'    => true,
-                'message'   => 'Expense template has been updated',
+                'message'   => 'Шаблон обновлён',
             ], Response::HTTP_OK);
 
         } catch (\Exception $exception) {
@@ -88,8 +104,8 @@ class ExpenseTemplateController extends Controller
             $this->expenseTemplateService->delete($id);
 
             return response()->json([
-                'status' => true,
-                'message' => 'Expense template has been deleted',
+                'status'    => true,
+                'message'   => 'Шаблон удален',
             ], Response::HTTP_OK);
 
         } catch (\Exception $exception) {

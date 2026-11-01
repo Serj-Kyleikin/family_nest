@@ -16,7 +16,7 @@ class Update extends OA\Put
             tags:             ['Expenses'],
 
             summary:      'Обновить шаблон расхода',
-            description:  'Изменяет шаблон расхода текущего пользователя.',
+            description:  'Изменяет шаблон расхода текущего пользователя. Для общего шаблона изменения (название, цена, активность) сохраняются в копии семейной группы пользователя и видны всем её участникам, сам общий шаблон не меняется. Поле template_group_id общего шаблона должно совпадать с его категорией. Для общего шаблона нужна семейная группа.',
 
             security:         [['bearerAuth' => []]],
 
@@ -34,12 +34,12 @@ class Update extends OA\Put
             requestBody: new OA\RequestBody(
                 required:   true,
                 content:    new OA\JsonContent(
-                                required:   ['group_id', 'name', 'is_active'],
+                                required:   ['template_group_id', 'name', 'is_active'],
                                 properties: [
-                                                new OA\Property(property: 'group_id',  type: 'integer', example: 1),
-                                                new OA\Property(property: 'name',      type: 'string',  example: 'Молоко'),
-                                                new OA\Property(property: 'price',     type: 'string',  example: '89.90', nullable: true),
-                                                new OA\Property(property: 'is_active', type: 'boolean', example: true),
+                                                new OA\Property(property: 'template_group_id', type: 'integer', example: 1),
+                                                new OA\Property(property: 'name',              type: 'string',  example: 'Молоко'),
+                                                new OA\Property(property: 'price',             type: 'string',  example: '89.90', nullable: true),
+                                                new OA\Property(property: 'is_active',         type: 'boolean', example: true),
                                             ]
                             )
             ),
@@ -52,14 +52,14 @@ class Update extends OA\Put
                     content:      new OA\JsonContent(
                                       properties: [
                                                       new OA\Property(property: 'status',  type: 'boolean', example: true),
-                                                      new OA\Property(property: 'message', type: 'string',  example: 'Expense template has been updated'),
+                                                      new OA\Property(property: 'message', type: 'string',  example: 'Шаблон обновлён'),
                                                   ]
                                   )
                 ),
 
                 new OA\Response(response: 401, description: 'Пользователь не авторизован'),
-                new OA\Response(response: 404, description: 'Шаблон не найден'),
-                new OA\Response(response: 422, description: 'Ошибка валидации'),
+                new OA\Response(response: 404, description: 'Шаблон или семейная группа не найдены'),
+                new OA\Response(response: 422, description: 'Ошибка валидации или template_group_id общего шаблона не совпадает с его категорией'),
             ]
         );
     }

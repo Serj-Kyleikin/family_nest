@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Chat;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\{
     Chat\ChatSearchRequest,
+    Chat\ChatShowRequest,
     Chat\ChatStoreRequest,
 };
 use App\Services\{
@@ -84,10 +85,12 @@ class ChatController extends Controller
     }
 
     #[Swagger\Show]
-    public function show(int $chatId): JsonResponse
+    public function show(ChatShowRequest $request, int $chatId): JsonResponse
     {
+        $beforeId = $request->filled('before_id') ? intval($request->input('before_id')) : null;
+
         try {
-            $chat = $this->chatService->getChatWithDiscussionsAndMembers($chatId);
+            $chat = $this->chatService->getChatWithDiscussionsAndMembers($chatId, $beforeId);
 
             return response()->json([
                 'status'    => true,

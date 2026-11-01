@@ -38,7 +38,7 @@ class Store extends OA\Post
                     content:      new OA\JsonContent(
                                       properties: [
                                                       new OA\Property(property: 'status',  type: 'boolean', example: true),
-                                                      new OA\Property(property: 'message', type: 'string',  example: 'Template group has been created'),
+                                                      new OA\Property(property: 'message', type: 'string',  example: 'Категория создана'),
                                                   ]
                                   )
                 ),

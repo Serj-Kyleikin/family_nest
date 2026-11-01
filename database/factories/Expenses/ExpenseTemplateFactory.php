@@ -18,9 +18,9 @@ class ExpenseTemplateFactory extends Factory
     public function definition(): array
     {
         return [
-            'group_id'  => ExpenseTemplateGroup::factory(),
-            'name'      => $this->faker->word(),
-            'is_active' => true,
+            'template_group_id' => ExpenseTemplateGroup::factory(),
+            'name'              => $this->faker->word(),
+            'is_active'         => true,
         ];
     }
 }

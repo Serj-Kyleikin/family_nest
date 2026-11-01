@@ -12,6 +12,8 @@ use Illuminate\Support\Collection;
 
 class ChatRepository extends AbstractRepository implements CreateContract, UpdateContract
 {
+    public const DISCUSSIONS_LIMIT = 20;
+
     public function __construct(
         protected Chat $model
     )
@@ -65,15 +67,18 @@ class ChatRepository extends AbstractRepository implements CreateContract, Updat
         })->values();
     }
 
-    public function getWithDiscussionsAndMembers(int $chatId): Chat
+    public function getWithDiscussionsAndMembers(int $chatId, ?int $beforeId = null): Chat
     {
         $chat = $this->model->query()
             ->where(['id' => $chatId])
             ->with([
-                'discussions' => function ($query) {
+                'discussions' => function ($query) use ($beforeId) {
                     $query
-                        ->orderBy('id', 'asc')
-                        ->limit(20);
+                        ->when($beforeId !== null, function ($query) use ($beforeId) {
+                            $query->where('id', '<', $beforeId);
+                        })
+                        ->orderBy('id', 'desc')
+                        ->limit(self::DISCUSSIONS_LIMIT + 1);
                 },
                 'members.user:id,name'
             ])
@@ -86,6 +91,18 @@ class ChatRepository extends AbstractRepository implements CreateContract, Updat
                 ->filter()
                 ->values()
         );
+
+        $hasMore = $chat->discussions->count() > self::DISCUSSIONS_LIMIT;
+
+        $chat->setRelation(
+            'discussions',
+            $chat->discussions
+                ->take(self::DISCUSSIONS_LIMIT)
+                ->reverse()
+                ->values()
+        );
+
+        $chat->setAttribute('has_more', $hasMore);
 
         return $chat;
     }

@@ -15,10 +15,18 @@ class ExpenseStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'template_id'   => 'nullable|integer',
-            'group_id'      => 'nullable|integer',
-            'name'          => 'nullable|string|min:2|max:20',
-            'amount'        => 'required|numeric|decimal:0,2',
+            'template_id'       => 'nullable|integer',
+            'template_group_id' => 'nullable|integer',
+            'name'              => 'nullable|string|min:2|max:20',
+            'amount'            => 'required|numeric|decimal:0,2',
+            'date'              => 'nullable|date',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'date.date' => 'Неверный формат даты',
         ];
     }
 

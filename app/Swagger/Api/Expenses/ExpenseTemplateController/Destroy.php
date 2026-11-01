@@ -16,7 +16,7 @@ class Destroy extends OA\Delete
             tags:             ['Expenses'],
 
             summary:      'Удалить шаблон расхода',
-            description:  'Удаляет шаблон расхода текущего пользователя.',
+            description:  'Удаляет шаблон расхода текущего пользователя. Для общего шаблона удаляет копию семейной группы пользователя, после чего снова возвращается сам общий шаблон; удалить общий шаблон нельзя, а если копии не было, запрос тоже завершается успешно. Для общего шаблона нужна семейная группа.',
 
             security:         [['bearerAuth' => []]],
 
@@ -39,13 +39,13 @@ class Destroy extends OA\Delete
                     content:      new OA\JsonContent(
                                       properties: [
                                                       new OA\Property(property: 'status',  type: 'boolean', example: true),
-                                                      new OA\Property(property: 'message', type: 'string',  example: 'Expense template has been deleted'),
+                                                      new OA\Property(property: 'message', type: 'string',  example: 'Шаблон удален'),
                                                   ]
                                   )
                 ),
 
                 new OA\Response(response: 401, description: 'Пользователь не авторизован'),
-                new OA\Response(response: 404, description: 'Шаблон не найден'),
+                new OA\Response(response: 404, description: 'Шаблон или семейная группа не найдены'),
             ]
         );
     }
