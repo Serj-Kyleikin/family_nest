@@ -3,7 +3,10 @@
 namespace App\Services\Chat\Handler;
 
 use App\Models\Chat\ChatMembers;
-use App\Services\Chat\Repositories\ChatMemberRepository;
+use App\Services\{
+    Chat\Repositories\ChatMemberRepository,
+    Family\Repositories\FamilyUserRepository,
+};
 use Illuminate\Support\{
     Facades\Http,
     Facades\Log,
@@ -15,7 +18,8 @@ class PublishChatEventHandler
     private const TEXT_PREVIEW_LIMIT = 100;
 
     public function __construct(
-        private readonly ChatMemberRepository $chatMemberRepository,
+        private readonly ChatMemberRepository   $chatMemberRepository,
+        private readonly FamilyUserRepository   $familyUserRepository,
     )
     {
     }
@@ -27,13 +31,18 @@ class PublishChatEventHandler
 
     public function handleMessage(int $chatId, int $senderId, string $senderName, string|null $text): void
     {
-        $recipientIds = array_values(array_diff($this->getMemberIds($chatId), [$senderId]));
+        $recipientIds       = array_values(array_diff($this->getMemberIds($chatId), [$senderId]));
+        $aliases            = $this->familyUserRepository->getAliasesByUserIds($senderId, $recipientIds);
+        $recipientsByName   = collect($recipientIds)
+            ->groupBy(fn (int $recipientId): string => strval($aliases[$recipientId] ?? $senderName));
 
-        $this->publish('chat.message', $recipientIds, [
-            'chat_id'   => $chatId,
-            'user_name' => $senderName,
-            'text'      => Str::limit(strval($text), self::TEXT_PREVIEW_LIMIT),
-        ]);
+        foreach ($recipientsByName as $name => $ids) {
+            $this->publish('chat.message', $ids->values()->all(), [
+                'chat_id'   => $chatId,
+                'user_name' => strval($name),
+                'text'      => Str::limit(strval($text), self::TEXT_PREVIEW_LIMIT),
+            ]);
+        }
     }
 
     private function getMemberIds(int $chatId): array

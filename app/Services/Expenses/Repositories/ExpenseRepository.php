@@ -9,6 +9,7 @@ use App\Models\Expenses\Expense;
 use App\Models\Expenses\ExpensePermission;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ExpenseRepository extends AbstractRepository implements CreateContract, UpdateContract
 {
@@ -37,6 +38,10 @@ class ExpenseRepository extends AbstractRepository implements CreateContract, Up
 
         return $this->model->query()
             ->join('users', 'users.id', '=', 'expenses.user_id')
+            ->leftJoin('family_users', function ($join) use ($userId) {
+                $join->on('family_users.member_id', '=', 'expenses.user_id')
+                    ->where('family_users.user_id', $userId);
+            })
             ->leftJoin('expense_template_groups', function ($join) {
                 $join->on('expense_template_groups.id', '=', 'expenses.template_group_id')
                     ->on(function ($join) {
@@ -78,7 +83,7 @@ class ExpenseRepository extends AbstractRepository implements CreateContract, Up
             ->get([
                 'expenses.id',
                 'expenses.user_id',
-                'users.name as user_name',
+                DB::raw('COALESCE(family_users.alias, users.name) as user_name'),
                 'expenses.template_group_id',
                 'expense_template_groups.name as template_group_name',
                 'expenses.name',

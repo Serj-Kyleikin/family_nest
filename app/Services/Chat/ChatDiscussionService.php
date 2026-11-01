@@ -6,6 +6,7 @@ use App\Services\{
     Chat\Handler\PublishChatEventHandler,
     Chat\Repositories\ChatDiscussionRepository,
     Chat\Util\ChatRulesUtil,
+    Family\Handler\FamilyMemberNameHandler,
 };
 use Illuminate\{
     Support\Collection,
@@ -17,6 +18,7 @@ class ChatDiscussionService
     public function __construct(
         private readonly ChatDiscussionRepository   $chatDiscussionRepository,
         private readonly PublishChatEventHandler    $publishChatEventHandler,
+        private readonly FamilyMemberNameHandler    $familyMemberNameHandler,
     )
     {
     }
@@ -66,7 +68,11 @@ class ChatDiscussionService
         $senderId = Auth::id();
         ChatRulesUtil::isUserMemberOfThisChat($chatId, $senderId);
 
-        return $this->chatDiscussionRepository->searchByText($chatId, $text);
+        $discussions = $this->chatDiscussionRepository->searchByText($chatId, $text);
+
+        $this->familyMemberNameHandler->apply($discussions->pluck('user'));
+
+        return $discussions;
     }
 
     public function setIsRead(int $chatId, array $lookedDiscussionsIds): void

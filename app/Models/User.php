@@ -49,10 +49,12 @@ use Symfony\Component\HttpFoundation\Response;
 #[OA\Schema(
     schema: 'FamilyMember',
     properties: [
-        new OA\Property(property: 'id',       type: 'integer', example: 5),
-        new OA\Property(property: 'name',     type: 'string',  example: 'Иван Иванов'),
-        new OA\Property(property: 'group_id', type: 'integer', example: 1),
-        new OA\Property(property: 'group',    type: 'object',  ref: '#/components/schemas/FamilyGroup'),
+        new OA\Property(property: 'id',        type: 'integer', example: 5),
+        new OA\Property(property: 'name',      type: 'string',  example: 'Сын', description: 'Отображаемое имя: alias, заданный текущим пользователем, или имя из профиля'),
+        new OA\Property(property: 'alias',     type: 'string',  example: 'Сын', nullable: true, description: 'Alias, заданный текущим пользователем'),
+        new OA\Property(property: 'group_id',  type: 'integer', example: 1),
+        new OA\Property(property: 'group',     type: 'object',  ref: '#/components/schemas/FamilyGroup'),
+        new OA\Property(property: 'user_data', type: 'object',  ref: '#/components/schemas/UserData', nullable: true, description: 'Публичные данные участника. Приходит только в карточке участника'),
     ]
 )]
 class User extends Authenticatable
@@ -89,6 +91,11 @@ class User extends Authenticatable
     public function group(): BelongsTo
     {
         return $this->belongsTo(FamilyGroup::class, 'group_id');
+    }
+
+    public function userData(): HasOne
+    {
+        return $this->hasOne(UserData::class, 'user_id');
     }
 
     public function joinRequest(): HasOne

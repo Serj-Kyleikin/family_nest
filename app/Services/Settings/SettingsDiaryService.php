@@ -4,6 +4,7 @@ namespace App\Services\Settings;
 
 use App\Services\{
     Auth\Repositories\UserRepository,
+    Family\Handler\FamilyMemberNameHandler,
     Settings\Repositories\DiaryPermissionRepository,
     Settings\Util\SettingsExpensesRulesUtil,
 };
@@ -17,6 +18,7 @@ class SettingsDiaryService
     public function __construct(
         private readonly UserRepository             $userRepository,
         private readonly DiaryPermissionRepository  $diaryPermissionRepository,
+        private readonly FamilyMemberNameHandler    $familyMemberNameHandler,
     ) {
     }
 
@@ -29,9 +31,13 @@ class SettingsDiaryService
             ->getWhere(['owner_id' => $user->id], ['viewer_id'])
             ->pluck('viewer_id');
 
-        return $this->userRepository
+        $members    = $this->userRepository
             ->getWhere(['group_id' => $group->id], ['id', 'name'])
-            ->reject(fn ($member) => $member->id === $user->id)
+            ->reject(fn ($member) => $member->id === $user->id);
+
+        $this->familyMemberNameHandler->apply($members);
+
+        return $members
             ->map(fn ($member) => [
                 'id'            => $member->id,
                 'name'          => $member->name,

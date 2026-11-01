@@ -9,6 +9,7 @@ use App\Services\{
     Family\Repositories\FamilyGroupLinkRepository,
     Family\Repositories\FamilyGroupLinkRequestRepository,
     Family\Repositories\FamilyGroupRepository,
+    Family\Repositories\FamilyUserRepository,
     Family\Util\GroupRulesUtil,
 };
 use Illuminate\Support\Facades\Auth;
@@ -22,6 +23,7 @@ class FamilyGroupService
         private DeleteUsersChatsHandler             $deleteUsersChatsHandler,
         private FamilyGroupLinkRepository           $familyGroupLinkRepository,
         private FamilyGroupLinkRequestRepository    $familyGroupLinkRequestRepository,
+        private FamilyUserRepository                $familyUserRepository,
     ) {}
 
     public function create(): FamilyGroup
@@ -73,9 +75,10 @@ class FamilyGroupService
 
                     $this->deleteUsersChatsHandler->handle($userIds);
                     $this->userRepository->update(
-                        ['group_id' => $group->id], 
+                        ['group_id' => $group->id],
                         ['group_id' => null]
                     );
+                    $this->familyUserRepository->deleteByUserIds($userIds);
                     $this->familyGroupLinkRequestRepository->deleteByGroupId($group->id);
                     $this->familyGroupLinkRepository->delete(['group_id' => $group->id]);
                     $this->familyGroupRepository->delete(['id' => $group->id]);

@@ -9,6 +9,7 @@ use App\Services\{
     Chat\Handler\CreateChatHandler,
     Chat\Repositories\ChatRepository,
     Chat\Util\ChatRulesUtil,
+    Family\Handler\FamilyMemberNameHandler,
 };
 use Illuminate\{
     Support\Collection,
@@ -18,8 +19,9 @@ use Illuminate\{
 class ChatService
 {
     public function __construct(
-        private readonly CreateChatHandler  $createChatHandler,
-        private readonly ChatRepository     $chatRepository,
+        private readonly CreateChatHandler          $createChatHandler,
+        private readonly ChatRepository             $chatRepository,
+        private readonly FamilyMemberNameHandler    $familyMemberNameHandler,
     )
     {
     }
@@ -27,20 +29,30 @@ class ChatService
     public function index(): Collection
     {
         $userId = Auth::id();
+        $chats  = $this->chatRepository->getUserChats($userId);
 
-        return $this->chatRepository->getUserChats($userId);
+        $this->familyMemberNameHandler->apply($chats->pluck('member'));
+
+        return $chats;
     }
 
     public function search(string $text): Collection
     {
         $userId = Auth::id();
+        $chats  = $this->chatRepository->getUserChats($userId, $text);
 
-        return $this->chatRepository->getUserChats($userId, $text);
+        $this->familyMemberNameHandler->apply($chats->pluck('member'));
+
+        return $chats;
     }
 
     public function create(int $userToId): Chat
     {
-        return $this->createChatHandler->handle($userToId);
+        $chat = $this->createChatHandler->handle($userToId);
+
+        $this->familyMemberNameHandler->apply($chat->users);
+
+        return $chat;
     }
 
     public function getChatWithDiscussionsAndMembers(int $chatId, ?int $beforeId = null): Chat
@@ -48,6 +60,10 @@ class ChatService
         $userId = Auth::id();
         ChatRulesUtil::isUserMemberOfThisChat($chatId, $userId);
 
-        return $this->chatRepository->getWithDiscussionsAndMembers($chatId, $beforeId);
+        $chat = $this->chatRepository->getWithDiscussionsAndMembers($chatId, $beforeId);
+
+        $this->familyMemberNameHandler->apply($chat->members);
+
+        return $chat;
     }
 }

@@ -8,6 +8,7 @@ use App\SharedKernel\Repository\AbstractRepository;
 use App\SharedKernel\Repository\Contracts\CreateContract;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class DiaryEntryRepository extends AbstractRepository implements CreateContract
 {
@@ -29,6 +30,10 @@ class DiaryEntryRepository extends AbstractRepository implements CreateContract
 
         return $this->model->query()
             ->join('users', 'users.id', '=', 'diary_entries.user_id')
+            ->leftJoin('family_users', function ($join) use ($userId) {
+                $join->on('family_users.member_id', '=', 'diary_entries.user_id')
+                    ->where('family_users.user_id', $userId);
+            })
             ->where(function ($query) use ($userId, $familyGroupId, $permittedOwners) {
                 $query->where('diary_entries.user_id', $userId)
                     ->when($familyGroupId !== null, function ($query) use ($familyGroupId, $permittedOwners) {
@@ -46,7 +51,7 @@ class DiaryEntryRepository extends AbstractRepository implements CreateContract
             ->get([
                 'diary_entries.id',
                 'diary_entries.user_id',
-                'users.name as user_name',
+                DB::raw('COALESCE(family_users.alias, users.name) as user_name'),
                 'diary_entries.text',
                 'diary_entries.date',
                 'diary_entries.date_end',

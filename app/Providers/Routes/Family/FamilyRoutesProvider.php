@@ -44,6 +44,7 @@ class FamilyRoutesProvider
                     Route::group(['prefix' => '{user_id}', 'where' => ['user_id' => '[0-9]+']], function () {
 
                         Route::get('', [FamilyMemberController::class, 'show']);
+                        Route::put('', [FamilyMemberController::class, 'update']);
                         Route::delete('', [FamilyMemberController::class, 'destroy']);
                     });
                 });
