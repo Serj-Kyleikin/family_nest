@@ -12,6 +12,8 @@ class UserRoutesProvider
         Route::group(['prefix' => 'user'], function () {
 
             Route::get('current', [UserController::class, 'current']);
+
+            app(UserDiaryRoutesProvider::class)->register();
         });
     }
 }
