@@ -125,20 +125,4 @@ class ChatRepository extends AbstractRepository implements CreateContract, Updat
 
         return $chat;
     }
-
-    public function getIdsWhereAllMembersIn(array $userIds): array
-    {
-        return $this->model->query()
-            ->whereHas('members', fn ($query) => $query->whereIn('user_id', $userIds))
-            ->whereDoesntHave('members', fn ($query) => $query->whereNotIn('user_id', $userIds))
-            ->pluck('id')
-            ->all();
-    }
-
-    public function deleteByIds(array $chatIds): void
-    {
-        $this->model->query()
-            ->whereIn('id', $chatIds)
-            ->delete();
-    }
 }
