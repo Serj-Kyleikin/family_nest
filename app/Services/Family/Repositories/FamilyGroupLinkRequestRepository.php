@@ -43,11 +43,4 @@ class FamilyGroupLinkRequestRepository extends AbstractRepository implements Cre
             ->where('status', FamilyGroupLinkRequestStatusEnum::PENDING->value)
             ->first();
     }
-
-    public function deleteByGroupId(int $groupId): void
-    {
-        $this->model->query()
-            ->whereHas('link', fn ($query) => $query->where('group_id', $groupId))
-            ->delete();
-    }
 }

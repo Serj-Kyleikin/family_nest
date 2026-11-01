@@ -3,9 +3,6 @@
 namespace App\Http\Controllers\Api\Family;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\Family\Group\{
-    FamilyGroupUpdateRequest,
-};
 use App\Services\Family\FamilyGroupService;
 use App\Swagger\Api\Family\FamilyGroupController as Swagger;
 use App\Exceptions\HandledException;
@@ -54,45 +51,6 @@ class FamilyGroupController extends Controller
             ], Response::HTTP_OK);
 
         } catch (HandledException $exception) {
-            return $this->error($exception);
-        }
-    }
-
-    #[Swagger\Update]
-    public function update(FamilyGroupUpdateRequest $request): JsonResponse
-    {
-        $name = strval($request->input('name'));
-
-        try {
-            $group = $this->familyGroupService->update($name);
-
-            return response()->json([
-                'status'    => true,
-                'data'      => $group,
-                'message'   => 'Группа успешно обновлена.',
-            ], Response::HTTP_OK);
-
-        } catch (HandledException $exception) {
-            return $this->error($exception);
-        }
-    }
-
-    #[Swagger\Destroy]
-    public function destroy(): JsonResponse
-    {
-        try {
-            DB::beginTransaction();
-            $this->familyGroupService->delete();
-            DB::commit();
-
-            return response()->json([
-                'status'    => true,
-                'message'   => 'Группа успешно удалена.',
-            ], Response::HTTP_OK);
-
-        } catch (HandledException $exception) {
-
-            DB::rollBack();
             return $this->error($exception);
         }
     }

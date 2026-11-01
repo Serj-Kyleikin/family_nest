@@ -1832,76 +1832,6 @@
                     }
                 ]
             },
-            "put": {
-                "tags": [
-                    "Family Group"
-                ],
-                "summary": "Изменить семейную группу",
-                "description": "Изменяет название семейной группы текущего пользователя и возвращает обновлённую группу.",
-                "operationId": "familyGroupUpdate",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "name"
-                                ],
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "example": "Ивановы"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Группа успешно обновлена",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "required": [
-                                        "status",
-                                        "message"
-                                    ],
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "data": {
-                                            "$ref": "#/components/schemas/FamilyGroup"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Группа успешно обновлена."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Пользователь не авторизован"
-                    },
-                    "404": {
-                        "description": "Группа не найдена"
-                    },
-                    "422": {
-                        "description": "Ошибка валидации"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
             "post": {
                 "tags": [
                     "Family Group"
@@ -1955,51 +1885,6 @@
                     },
                     "403": {
                         "description": "Группа уже создана"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            },
-            "delete": {
-                "tags": [
-                    "Family Group"
-                ],
-                "summary": "Удалить семейную группу",
-                "description": "Удаляет семейную группу текущего пользователя, отвязывает от неё всех участников и удаляет чаты, в которых состоят только участники этой группы.",
-                "operationId": "familyGroupDestroy",
-                "responses": {
-                    "200": {
-                        "description": "Группа успешно удалена",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "required": [
-                                        "status",
-                                        "message"
-                                    ],
-                                    "properties": {
-                                        "status": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Группа успешно удалена."
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Пользователь не авторизован"
-                    },
-                    "404": {
-                        "description": "Группа не найдена"
                     }
                 },
                 "security": [

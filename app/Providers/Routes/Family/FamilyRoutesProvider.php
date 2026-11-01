@@ -20,8 +20,6 @@ class FamilyRoutesProvider
 
                 Route::post('', [FamilyGroupController::class, 'create']);
                 Route::get('', [FamilyGroupController::class, 'show']);
-                Route::put('', [FamilyGroupController::class, 'update']);
-                Route::delete('', [FamilyGroupController::class, 'destroy']);
 
                 Route::group(['prefix' => 'link'], function () {
 
